@@ -13,6 +13,7 @@ const RestaurantSystem = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [settings, setSettings] = useState({ dailyMotorcycleCost: 30, perDeliveryCost: 10 });
   const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     const loadData = () => {
@@ -179,10 +180,33 @@ const RestaurantSystem = () => {
     e.target.value = '';
   };
 
+  const handleImageUpload = (e, isEdit = false) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const imageDataUrl = reader.result;
+          if (isEdit) {
+            setEditingItem({...editingItem, image: imageDataUrl});
+          } else {
+            setNewItem({...newItem, image: imageDataUrl});
+            setImagePreview(imageDataUrl);
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('⚠️ يرجى اختيار ملف صورة صحيح');
+      }
+    }
+    e.target.value = '';
+  };
+
   const addMenuItem = () => {
     if (newItem.name && newItem.price) {
       saveMenu([...menuItems, { id: Date.now(), ...newItem, price: parseFloat(newItem.price) }]);
       setNewItem({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+      setImagePreview(null);
       setShowAddItem(false);
     }
   };
@@ -354,7 +378,34 @@ const RestaurantSystem = () => {
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <textarea placeholder="الوصف (اختياري)" value={newItem.description || ''} onChange={(e) => setNewItem({...newItem, description: e.target.value})} className="w-full p-2 border-2 rounded mb-3" rows="2" />
-            <input type="text" placeholder="رابط الصورة (اختياري)" value={newItem.image} onChange={(e) => setNewItem({...newItem, image: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
+            
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-2 text-gray-700">📷 الصورة:</label>
+              <div className="space-y-2">
+                <label className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-blue-700 cursor-pointer">
+                  📤 رفع صورة من الجهاز
+                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="hidden" />
+                </label>
+                <div className="text-center text-gray-500 text-sm">أو</div>
+                <input type="text" placeholder="رابط الصورة (URL)" value={newItem.image && !newItem.image.startsWith('data:') ? newItem.image : ''} onChange={(e) => {
+                  setNewItem({...newItem, image: e.target.value});
+                  setImagePreview(e.target.value || null);
+                }} className="w-full p-2 border-2 rounded" />
+              </div>
+              {(imagePreview || (newItem.image && !newItem.image.startsWith('data:'))) && (
+                <div className="mt-3">
+                  <p className="text-xs text-gray-600 mb-1">معاينة الصورة:</p>
+                  <img src={newItem.image || imagePreview} alt="معاينة" className="w-full h-40 object-cover rounded border-2" onError={(e) => { e.target.style.display = 'none'; }} />
+                  <button onClick={() => {
+                    setNewItem({...newItem, image: ''});
+                    setImagePreview(null);
+                  }} className="mt-2 w-full bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">
+                    🗑️ حذف الصورة
+                  </button>
+                </div>
+              )}
+            </div>
+            
             <div className="flex gap-2">
               <button onClick={() => setShowAddItem(false)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">إلغاء</button>
               <button onClick={addMenuItem} className="flex-1 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">إضافة</button>
@@ -492,11 +543,36 @@ const RestaurantSystem = () => {
                       )}
                       {editingItem?.id === item.id ? (
                         <div className="p-4 space-y-2">
-                          <input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full p-2 border rounded" />
-                          <input type="number" step="0.01" value={editingItem.price} onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                          <input type="text" placeholder="اسم الصنف" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full p-2 border-2 rounded" />
+                          <input type="number" step="0.01" placeholder="السعر (R$)" value={editingItem.price} onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})} className="w-full p-2 border-2 rounded" />
+                          <select value={editingItem.category} onChange={(e) => setEditingItem({...editingItem, category: e.target.value})} className="w-full p-2 border-2 rounded">
+                            {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                          <textarea placeholder="الوصف (اختياري)" value={editingItem.description || ''} onChange={(e) => setEditingItem({...editingItem, description: e.target.value})} className="w-full p-2 border-2 rounded" rows="2" />
+                          
+                          <div>
+                            <label className="block text-sm font-semibold mb-2 text-gray-700">📷 الصورة:</label>
+                            <div className="space-y-2">
+                              <label className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-blue-700 cursor-pointer">
+                                📤 رفع صورة من الجهاز
+                                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="hidden" />
+                              </label>
+                              <div className="text-center text-gray-500 text-sm">أو</div>
+                              <input type="text" placeholder="رابط الصورة (URL)" value={editingItem.image && !editingItem.image.startsWith('data:') ? editingItem.image : ''} onChange={(e) => setEditingItem({...editingItem, image: e.target.value})} className="w-full p-2 border-2 rounded" />
+                            </div>
+                            {editingItem.image && (
+                              <div className="mt-3">
+                                <p className="text-xs text-gray-600 mb-1">معاينة الصورة:</p>
+                                <img src={editingItem.image} alt="معاينة" className="w-full h-32 object-cover rounded border-2" onError={(e) => { e.target.style.display = 'none'; }} />
+                                <button onClick={() => setEditingItem({...editingItem, image: ''})} className="mt-2 w-full bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600">
+                                  🗑️ حذف الصورة
+                                </button>
+                              </div>
+                            )}
+                          </div>
                           <div className="flex gap-2">
-                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded">✓</button>
-                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded">✕</button>
+                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded hover:bg-green-700">✓ حفظ</button>
+                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded hover:bg-red-700">✕ إلغاء</button>
                           </div>
                         </div>
                       ) : (
