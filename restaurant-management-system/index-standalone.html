@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المطعم</title>
+    <title>Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø·Ø¹Ù…</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -40,7 +40,7 @@ const RestaurantSystem = () => {
         if (settingsData) setSettings(JSON.parse(settingsData));
         if (discountsData) setDiscounts(JSON.parse(discountsData));
       } catch (error) {
-        console.log('بدء بيانات جديدة');
+        console.log('Ø¨Ø¯Ø¡ Ø¨ÙŠØ§Ù†Ø§Øª Ø¬Ø¯ÙŠØ¯Ø©');
       }
     };
     loadData();
@@ -77,7 +77,7 @@ const RestaurantSystem = () => {
     });
     
     if (activeDiscount) {
-      console.log(`Discount found for ${item.name}: R$ ${item.price} → R$ ${activeDiscount.discountPrice}`);
+      console.log(`Discount found for ${item.name}: R$ ${item.price} â†’ R$ ${activeDiscount.discountPrice}`);
       return activeDiscount.discountPrice;
     }
     
@@ -144,10 +144,10 @@ const RestaurantSystem = () => {
       
       URL.revokeObjectURL(url);
       
-      alert('✅ تم تصدير البيانات بنجاح!');
+      alert('âœ… ØªÙ… ØªØµØ¯ÙŠØ± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!');
     } catch (error) {
       console.error('Export error:', error);
-      alert('❌ خطأ في تصدير البيانات');
+      alert('âŒ Ø®Ø·Ø£ ÙÙŠ ØªØµØ¯ÙŠØ± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª');
     }
   };
 
@@ -183,11 +183,11 @@ const RestaurantSystem = () => {
         setDiscounts(data.discounts);
       }
       
-      alert('✅ تم استيراد البيانات بنجاح!');
+      alert('âœ… ØªÙ… Ø§Ø³ØªÙŠØ±Ø§Ø¯ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!');
       
     } catch (error) {
       console.error('Import error:', error);
-      alert('❌ خطأ في استيراد البيانات. تأكد من صحة الملف.');
+      alert('âŒ Ø®Ø·Ø£ ÙÙŠ Ø§Ø³ØªÙŠØ±Ø§Ø¯ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª. ØªØ£ÙƒØ¯ Ù…Ù† ØµØ­Ø© Ø§Ù„Ù…Ù„Ù.');
     }
     
     e.target.value = '';
@@ -226,7 +226,7 @@ const RestaurantSystem = () => {
     saveOrders([order, ...completedOrders]);
     setCurrentOrder([]);
     setShowCheckout(false);
-    alert('✅ تم إتمام الطلب بنجاح!');
+    alert('âœ… ØªÙ… Ø¥ØªÙ…Ø§Ù… Ø§Ù„Ø·Ù„Ø¨ Ø¨Ù†Ø¬Ø§Ø­!');
   };
 
   const toggleOrderStatus = (orderId) => {
@@ -241,9 +241,9 @@ const RestaurantSystem = () => {
   };
 
   const deleteOrder = (orderId) => {
-    if (window.confirm('هل تريد حذف هذا الطلب نهائياً؟\n⚠️ لا يمكن التراجع عن هذا الإجراء')) {
+    if (window.confirm('Ù‡Ù„ ØªØ±ÙŠØ¯ Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ø·Ù„Ø¨ Ù†Ù‡Ø§Ø¦ÙŠØ§Ù‹ØŸ\nâš ï¸ Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù† Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡')) {
       saveOrders(completedOrders.filter(order => order.id !== orderId));
-      alert('✅ تم حذف الطلب بنجاح');
+      alert('âœ… ØªÙ… Ø­Ø°Ù Ø§Ù„Ø·Ù„Ø¨ Ø¨Ù†Ø¬Ø§Ø­');
     }
   };
 
@@ -325,16 +325,16 @@ const RestaurantSystem = () => {
       <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 rounded-xl mb-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🍽️</span>
-            <h1 className="text-2xl font-bold">إدارة المطعم</h1>
+            <span className="text-2xl">ðŸ½ï¸</span>
+            <h1 className="text-2xl font-bold">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø·Ø¹Ù…</h1>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowSettings(true)} className="bg-white text-orange-600 p-2 rounded-lg">
-              ⚙️
+              âš™ï¸
             </button>
             <button onClick={() => setShowCheckout(true)} disabled={currentOrder.length === 0}
               className="relative bg-white text-orange-600 px-4 py-2 rounded-lg flex items-center gap-2 font-bold disabled:opacity-50">
-              🛒
+              ðŸ›’
               {currentOrder.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
                   {currentOrder.reduce((s, i) => s + i.quantity, 0)}
@@ -346,32 +346,32 @@ const RestaurantSystem = () => {
       </div>
 
       <div className="bg-white rounded-xl mb-4 p-2 flex gap-2 overflow-x-auto">
-        <button onClick={() => setView('menu')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'menu' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📋 القائمة</button>
-        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📈 المبيعات</button>
-        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>🕐 الطلبات</button>
-        <button onClick={() => setShowDiscounts(true)} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">🏷️ الخصومات</button>
-        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">➕ إضافة</button>
+        <button onClick={() => setView('menu')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'menu' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>ðŸ“‹ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©</button>
+        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>ðŸ“ˆ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª</button>
+        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>ðŸ• Ø§Ù„Ø·Ù„Ø¨Ø§Øª</button>
+        <button onClick={() => setShowDiscounts(true)} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">ðŸ·ï¸ Ø§Ù„Ø®ØµÙˆÙ…Ø§Øª</button>
+        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">âž• Ø¥Ø¶Ø§ÙØ©</button>
       </div>
 
       {showAddItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowAddItem(false)}>
           <div className="bg-white rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-orange-600">إضافة صنف</h2>
+              <h2 className="text-xl font-bold text-orange-600">Ø¥Ø¶Ø§ÙØ© ØµÙ†Ù</h2>
               <button onClick={() => setShowAddItem(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
+                âœ•
               </button>
             </div>
-            <input type="text" placeholder="اسم الصنف" value={newItem.name} onChange={(e) => setNewItem({...newItem, name: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
-            <input type="number" step="0.01" placeholder="السعر (R$)" value={newItem.price} onChange={(e) => setNewItem({...newItem, price: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
+            <input type="text" placeholder="Ø§Ø³Ù… Ø§Ù„ØµÙ†Ù" value={newItem.name} onChange={(e) => setNewItem({...newItem, name: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
+            <input type="number" step="0.01" placeholder="Ø§Ù„Ø³Ø¹Ø± (R$)" value={newItem.price} onChange={(e) => setNewItem({...newItem, price: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
             <select value={newItem.category} onChange={(e) => setNewItem({...newItem, category: e.target.value})} className="w-full p-2 border-2 rounded mb-3">
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
-            <textarea placeholder="الوصف (اختياري)" value={newItem.description || ''} onChange={(e) => setNewItem({...newItem, description: e.target.value})} className="w-full p-2 border-2 rounded mb-3" rows="2" />
-            <input type="text" placeholder="رابط الصورة (اختياري)" value={newItem.image} onChange={(e) => setNewItem({...newItem, image: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
+            <textarea placeholder="Ø§Ù„ÙˆØµÙ (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)" value={newItem.description || ''} onChange={(e) => setNewItem({...newItem, description: e.target.value})} className="w-full p-2 border-2 rounded mb-3" rows="2" />
+            <input type="text" placeholder="Ø±Ø§Ø¨Ø· Ø§Ù„ØµÙˆØ±Ø© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)" value={newItem.image} onChange={(e) => setNewItem({...newItem, image: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
             <div className="flex gap-2">
-              <button onClick={() => setShowAddItem(false)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">إلغاء</button>
-              <button onClick={addMenuItem} className="flex-1 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">إضافة</button>
+              <button onClick={() => setShowAddItem(false)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Ø¥Ù„ØºØ§Ø¡</button>
+              <button onClick={addMenuItem} className="flex-1 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Ø¥Ø¶Ø§ÙØ©</button>
             </div>
           </div>
         </div>
@@ -381,13 +381,13 @@ const RestaurantSystem = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCheckout(false)}>
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-8" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-blue-600">إتمام الطلب</h2>
+              <h2 className="text-2xl font-bold text-blue-600">Ø¥ØªÙ…Ø§Ù… Ø§Ù„Ø·Ù„Ø¨</h2>
               <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
+                âœ•
               </button>
             </div>
             <div className="mb-4 bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
-              <h3 className="font-bold mb-3 text-gray-700">🛒 عناصر الطلب:</h3>
+              <h3 className="font-bold mb-3 text-gray-700">ðŸ›’ Ø¹Ù†Ø§ØµØ± Ø§Ù„Ø·Ù„Ø¨:</h3>
               {currentOrder.map(i => {
                 const itemTotal = (i.price || 0) * (i.quantity || 0);
                 const menuItem = menuItems.find(mi => mi.id === i.id);
@@ -401,9 +401,9 @@ const RestaurantSystem = () => {
                       <div className="flex-1">
                         <p className="font-semibold">{i.name}</p>
                         <div className="flex items-center gap-2">
-                          <p className="text-xs text-gray-600">R$ {(i.price || 0).toFixed(2)} × {i.quantity}</p>
+                          <p className="text-xs text-gray-600">R$ {(i.price || 0).toFixed(2)} Ã— {i.quantity}</p>
                           {hasDiscount && (
-                            <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">🏷️ خصم</span>
+                            <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">ðŸ·ï¸ Ø®ØµÙ…</span>
                           )}
                           {priceChanged && (
                             <button 
@@ -411,11 +411,11 @@ const RestaurantSystem = () => {
                                 setCurrentOrder(currentOrder.map(o => 
                                   o.id === i.id ? {...o, price: currentPrice} : o
                                 ));
-                                alert('✅ تم تحديث السعر');
+                                alert('âœ… ØªÙ… ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø³Ø¹Ø±');
                               }}
                               className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded hover:bg-blue-600"
                             >
-                              تحديث للسعر الجديد
+                              ØªØ­Ø¯ÙŠØ« Ù„Ù„Ø³Ø¹Ø± Ø§Ù„Ø¬Ø¯ÙŠØ¯
                             </button>
                           )}
                         </div>
@@ -431,7 +431,7 @@ const RestaurantSystem = () => {
                 );
               })}
               <div className="border-t-2 pt-3 mt-3 flex justify-between text-xl font-bold text-green-600 bg-gray-50 sticky bottom-0 p-2 rounded">
-                <span>المجموع الكلي:</span>
+                <span>Ø§Ù„Ù…Ø¬Ù…ÙˆØ¹ Ø§Ù„ÙƒÙ„ÙŠ:</span>
                 <span>R$ {getTotal().toFixed(2)}</span>
               </div>
             </div>
@@ -447,36 +447,36 @@ const RestaurantSystem = () => {
           <div className="bg-white rounded-xl p-6 max-w-md w-full my-8" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-orange-600 flex items-center gap-2">
-                ⚙️ الإعدادات
+                âš™ï¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª
               </h2>
               <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
+                âœ•
               </button>
             </div>
-            <SettingsForm settings={settings} onSave={(s) => { saveSettings(s); setShowSettings(false); alert('✅ تم حفظ الإعدادات'); }} onCancel={() => setShowSettings(false)} />
+            <SettingsForm settings={settings} onSave={(s) => { saveSettings(s); setShowSettings(false); alert('âœ… ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª'); }} onCancel={() => setShowSettings(false)} />
             <div className="mt-6 pt-6 border-t-2">
-              <h3 className="font-bold mb-3 text-gray-700">📦 النسخ الاحتياطي</h3>
+              <h3 className="font-bold mb-3 text-gray-700">ðŸ“¦ Ø§Ù„Ù†Ø³Ø® Ø§Ù„Ø§Ø­ØªÙŠØ§Ø·ÙŠ</h3>
               <div className="space-y-2">
                 <button onClick={exportData} className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-blue-700">
-                  ⬇️ تصدير البيانات (JSON)
+                  â¬‡ï¸ ØªØµØ¯ÙŠØ± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª (JSON)
                 </button>
                 <label className="w-full bg-green-600 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-green-700 cursor-pointer">
-                  ⬆️ استيراد النسخة الاحتياطية
+                  â¬†ï¸ Ø§Ø³ØªÙŠØ±Ø§Ø¯ Ø§Ù„Ù†Ø³Ø®Ø© Ø§Ù„Ø§Ø­ØªÙŠØ§Ø·ÙŠØ©
                   <input type="file" accept=".json,application/json" onChange={importData} className="hidden" />
                 </label>
               </div>
               <div className="mt-3 bg-yellow-50 border-r-4 border-yellow-400 p-3 rounded">
                 <p className="text-xs text-gray-700">
-                  ⚠️ <strong>ملاحظة:</strong> عند استيراد نسخة احتياطية، سيتم استبدال جميع البيانات الحالية
+                  âš ï¸ <strong>Ù…Ù„Ø§Ø­Ø¸Ø©:</strong> Ø¹Ù†Ø¯ Ø§Ø³ØªÙŠØ±Ø§Ø¯ Ù†Ø³Ø®Ø© Ø§Ø­ØªÙŠØ§Ø·ÙŠØ©ØŒ Ø³ÙŠØªÙ… Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø­Ø§Ù„ÙŠØ©
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
-                  ✅ النسخ الاحتياطي يشمل: القائمة، الطلبات، الإعدادات، والخصومات
+                  âœ… Ø§Ù„Ù†Ø³Ø® Ø§Ù„Ø§Ø­ØªÙŠØ§Ø·ÙŠ ÙŠØ´Ù…Ù„: Ø§Ù„Ù‚Ø§Ø¦Ù…Ø©ØŒ Ø§Ù„Ø·Ù„Ø¨Ø§ØªØŒ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§ØªØŒ ÙˆØ§Ù„Ø®ØµÙˆÙ…Ø§Øª
                 </p>
               </div>
             </div>
             <div className="mt-4">
               <button onClick={() => setShowSettings(false)} className="w-full bg-gray-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-gray-700">
-                إغلاق الإعدادات
+                Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª
               </button>
             </div>
           </div>
@@ -501,7 +501,7 @@ const RestaurantSystem = () => {
                     <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden relative">
                       {hasDiscount && (
                         <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
-                          🏷️ خصم
+                          ðŸ·ï¸ Ø®ØµÙ…
                         </div>
                       )}
                       {editingItem?.id === item.id ? (
@@ -509,15 +509,15 @@ const RestaurantSystem = () => {
                           <input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full p-2 border rounded" />
                           <input type="number" step="0.01" value={editingItem.price} onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
                           <div className="flex gap-2">
-                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded">✓</button>
-                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded">✕</button>
+                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded">âœ“</button>
+                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded">âœ•</button>
                           </div>
                         </div>
                       ) : (
                         <>
                           {item.image ? <img src={item.image} alt={item.name} className="w-full h-40 object-cover" /> : 
                             <div className="w-full h-40 bg-gradient-to-br from-orange-200 to-red-200 flex items-center justify-center">
-                              <span className="text-5xl opacity-50">🍽️</span>
+                              <span className="text-5xl opacity-50">ðŸ½ï¸</span>
                             </div>
                           }
                           <div className="p-4">
@@ -534,8 +534,8 @@ const RestaurantSystem = () => {
                               )}
                             </div>
                             <div className="flex gap-1 mb-2">
-                              <button onClick={() => moveItemUp(cat, idx)} disabled={idx === 0} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأعلى">▲</button>
-                              <button onClick={() => moveItemDown(cat, idx)} disabled={idx === items.length - 1} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأسفل">▼</button>
+                              <button onClick={() => moveItemUp(cat, idx)} disabled={idx === 0} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="ØªØ­Ø±ÙŠÙƒ Ù„Ù„Ø£Ø¹Ù„Ù‰">â–²</button>
+                              <button onClick={() => moveItemDown(cat, idx)} disabled={idx === items.length - 1} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="ØªØ­Ø±ÙŠÙƒ Ù„Ù„Ø£Ø³ÙÙ„">â–¼</button>
                               <button onClick={() => {
                                 const itemPrice = currentPrice;
                                 const existing = currentOrder.find(o => o.id === item.id);
@@ -554,10 +554,10 @@ const RestaurantSystem = () => {
                                   }]);
                                 }
                               }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                🛒 أضف
+                                ðŸ›’ Ø£Ø¶Ù
                               </button>
-                              <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">✏️</button>
-                              <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700">🗑️</button>
+                              <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">âœï¸</button>
+                              <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700">ðŸ—‘ï¸</button>
                             </div>
                           </div>
                         </>
@@ -570,8 +570,8 @@ const RestaurantSystem = () => {
           })}
           {menuItems.length === 0 && (
             <div className="bg-white rounded-xl p-12 text-center">
-              <span className="text-5xl mb-4 block">🍽️</span>
-              <p className="text-gray-500">لا توجد أصناف</p>
+              <span className="text-5xl mb-4 block">ðŸ½ï¸</span>
+              <p className="text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø£ØµÙ†Ø§Ù</p>
             </div>
           )}
         </div>
@@ -583,21 +583,21 @@ const RestaurantSystem = () => {
         <div className="space-y-4">
           <div className="bg-white rounded-lg p-4 flex gap-2 flex-wrap">
             <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-lg">
-              <span className="font-bold text-green-700">✅ مكتملة:</span>
+              <span className="font-bold text-green-700">âœ… Ù…ÙƒØªÙ…Ù„Ø©:</span>
               <span className="font-bold text-green-600">{completedOrders.filter(o => o.status !== 'cancelled').length}</span>
             </div>
             <div className="flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg">
-              <span className="font-bold text-red-700">❌ ملغاة:</span>
+              <span className="font-bold text-red-700">âŒ Ù…Ù„ØºØ§Ø©:</span>
               <span className="font-bold text-red-600">{completedOrders.filter(o => o.status === 'cancelled').length}</span>
             </div>
             <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-              <span className="font-bold text-blue-700">📦 الإجمالي:</span>
+              <span className="font-bold text-blue-700">ðŸ“¦ Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ:</span>
               <span className="font-bold text-blue-600">{completedOrders.length}</span>
             </div>
           </div>
 
           {completedOrders.length === 0 ? (
-            <div className="bg-white rounded-xl p-12 text-center"><span className="text-5xl mb-4 block">🕐</span><p className="text-gray-500">لا توجد طلبات</p></div>
+            <div className="bg-white rounded-xl p-12 text-center"><span className="text-5xl mb-4 block">ðŸ•</span><p className="text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª</p></div>
           ) : (
             completedOrders.map(o => {
               const isCancelled = o.status === 'cancelled';
@@ -605,44 +605,44 @@ const RestaurantSystem = () => {
               <div key={o.id} className={`bg-white rounded-xl p-4 shadow-lg relative border-2 ${isCancelled ? 'border-red-300 opacity-75' : 'border-transparent'}`}>
                 {isCancelled && (
                   <div className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold z-10">
-                    ❌ ملغى
+                    âŒ Ù…Ù„ØºÙ‰
                   </div>
                 )}
                 <div className="absolute top-4 left-4 flex gap-2">
                   <button 
                     onClick={() => toggleOrderStatus(o.id)}
                     className={`${isCancelled ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'} text-white p-2 rounded-lg transition-colors`}
-                    title={isCancelled ? 'استعادة الطلب' : 'إلغاء الطلب'}
+                    title={isCancelled ? 'Ø§Ø³ØªØ¹Ø§Ø¯Ø© Ø§Ù„Ø·Ù„Ø¨' : 'Ø¥Ù„ØºØ§Ø¡ Ø§Ù„Ø·Ù„Ø¨'}
                   >
-                    {isCancelled ? '✓' : '✕'}
+                    {isCancelled ? 'âœ“' : 'âœ•'}
                   </button>
                   <button 
                     onClick={() => deleteOrder(o.id)}
                     className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
-                    title="حذف نهائي"
+                    title="Ø­Ø°Ù Ù†Ù‡Ø§Ø¦ÙŠ"
                   >
-                    🗑️
+                    ðŸ—‘ï¸
                   </button>
                 </div>
                 <div className={`flex justify-between mb-3 border-b pb-3 pr-12 ${isCancelled ? 'opacity-60' : ''}`}>
                   <div>
-                    <p className="font-bold text-orange-600">طلب #{o.id}</p>
-                    <p className="text-sm text-gray-600">📅 {o.date}</p>
+                    <p className="font-bold text-orange-600">Ø·Ù„Ø¨ #{o.id}</p>
+                    <p className="text-sm text-gray-600">ðŸ“… {o.date}</p>
                     <div className="mt-2 flex gap-2 flex-wrap">
                       <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-semibold">
-                        {o.orderSource === 'salon' ? '🏪 صالة' : 
-                         o.orderSource === 'whatsapp' ? '📱 واتساب' :
-                         o.orderSource === 'ifood' ? '🍔 iFood' :
-                         o.orderSource === 'delivery_mush' ? '🚗 Delivery Mush' : '🎁 Amo Oferta'}
+                        {o.orderSource === 'salon' ? 'ðŸª ØµØ§Ù„Ø©' : 
+                         o.orderSource === 'whatsapp' ? 'ðŸ“± ÙˆØ§ØªØ³Ø§Ø¨' :
+                         o.orderSource === 'ifood' ? 'ðŸ” iFood' :
+                         o.orderSource === 'delivery_mush' ? 'ðŸš— Delivery Mush' : 'ðŸŽ Amo Oferta'}
                       </span>
                       <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">
-                        {o.orderType === 'dine_in' ? '🍽️ أكل في المطعم' : 
-                         o.orderType === 'takeaway' ? '🥡 أخذ' : '🚗 توصيل'}
+                        {o.orderType === 'dine_in' ? 'ðŸ½ï¸ Ø£ÙƒÙ„ ÙÙŠ Ø§Ù„Ù…Ø·Ø¹Ù…' : 
+                         o.orderType === 'takeaway' ? 'ðŸ¥¡ Ø£Ø®Ø°' : 'ðŸš— ØªÙˆØµÙŠÙ„'}
                       </span>
                       <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold">
-                        {o.paymentMethod === 'cash' ? '💵 نقداً' : 
-                         o.paymentMethod === 'pix' ? '📲 Pix' : 
-                         o.paymentMethod === 'cartao' ? '💳 بطاقة' : '🍔 iFood'}
+                        {o.paymentMethod === 'cash' ? 'ðŸ’µ Ù†Ù‚Ø¯Ø§Ù‹' : 
+                         o.paymentMethod === 'pix' ? 'ðŸ“² Pix' : 
+                         o.paymentMethod === 'cartao' ? 'ðŸ’³ Ø¨Ø·Ø§Ù‚Ø©' : 'ðŸ” iFood'}
                       </span>
                     </div>
                   </div>
@@ -650,11 +650,11 @@ const RestaurantSystem = () => {
                 </div>
                 {o.items.map((i, idx) => (
                   <div key={idx} className={`flex justify-between bg-gray-50 p-2 rounded mb-1 ${isCancelled ? 'opacity-60' : ''}`}>
-                    <span>{i.name} × {i.quantity}</span>
+                    <span>{i.name} Ã— {i.quantity}</span>
                     <span>R$ {(i.price * i.quantity).toFixed(2)}</span>
                   </div>
                 ))}
-                {o.notes && <div className={`mt-2 bg-yellow-50 p-2 rounded text-sm ${isCancelled ? 'opacity-60' : ''}`}><strong>📝 ملاحظات:</strong> {o.notes}</div>}
+                {o.notes && <div className={`mt-2 bg-yellow-50 p-2 rounded text-sm ${isCancelled ? 'opacity-60' : ''}`}><strong>ðŸ“ Ù…Ù„Ø§Ø­Ø¸Ø§Øª:</strong> {o.notes}</div>}
               </div>
             );
             })
@@ -672,24 +672,24 @@ const CheckoutForm = ({onComplete, onCancel}) => {
   const [notes, setNotes] = useState('');
   
   const pms = [
-    {value: 'cash', label: '💵 نقداً (Dinheiro)'},
-    {value: 'pix', label: '📲 Pix'},
-    {value: 'cartao', label: '💳 بطاقة (Cartão)'},
-    {value: 'ifood_card', label: '🍔 بطاقة iFood'}
+    {value: 'cash', label: 'ðŸ’µ Ù†Ù‚Ø¯Ø§Ù‹ (Dinheiro)'},
+    {value: 'pix', label: 'ðŸ“² Pix'},
+    {value: 'cartao', label: 'ðŸ’³ Ø¨Ø·Ø§Ù‚Ø© (CartÃ£o)'},
+    {value: 'ifood_card', label: 'ðŸ” Ø¨Ø·Ø§Ù‚Ø© iFood'}
   ];
   
   const sources = [
-    {value: 'salon', label: '🏪 صالة المطعم'},
-    {value: 'whatsapp', label: '📱 واتساب'},
-    {value: 'ifood', label: '🍔 iFood'},
-    {value: 'delivery_mush', label: '🚗 Delivery Mush'},
-    {value: 'amo_oferta', label: '🎁 Amo Oferta'}
+    {value: 'salon', label: 'ðŸª ØµØ§Ù„Ø© Ø§Ù„Ù…Ø·Ø¹Ù…'},
+    {value: 'whatsapp', label: 'ðŸ“± ÙˆØ§ØªØ³Ø§Ø¨'},
+    {value: 'ifood', label: 'ðŸ” iFood'},
+    {value: 'delivery_mush', label: 'ðŸš— Delivery Mush'},
+    {value: 'amo_oferta', label: 'ðŸŽ Amo Oferta'}
   ];
   
   const types = [
-    {value: 'dine_in', label: '🍽️ أكل في المطعم'},
-    {value: 'takeaway', label: '🥡 أخذ'},
-    {value: 'delivery', label: '🚗 توصيل'}
+    {value: 'dine_in', label: 'ðŸ½ï¸ Ø£ÙƒÙ„ ÙÙŠ Ø§Ù„Ù…Ø·Ø¹Ù…'},
+    {value: 'takeaway', label: 'ðŸ¥¡ Ø£Ø®Ø°'},
+    {value: 'delivery', label: 'ðŸš— ØªÙˆØµÙŠÙ„'}
   ];
   
   const needsDelivery = type === 'delivery';
@@ -697,7 +697,7 @@ const CheckoutForm = ({onComplete, onCancel}) => {
   return (
     <>
       <div className="mb-4">
-        <label className="block mb-2 font-bold text-gray-700">مصدر الطلب: <span className="text-red-500">*</span></label>
+        <label className="block mb-2 font-bold text-gray-700">Ù…ØµØ¯Ø± Ø§Ù„Ø·Ù„Ø¨: <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-1 gap-2">
           {sources.map(s => (
             <label key={s.value} className="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-purple-50 transition-colors" 
@@ -710,21 +710,21 @@ const CheckoutForm = ({onComplete, onCancel}) => {
       </div>
       
       <div className="mb-4">
-        <label className="block mb-2 font-bold text-gray-700">نوع الطلب: <span className="text-red-500">*</span></label>
+        <label className="block mb-2 font-bold text-gray-700">Ù†ÙˆØ¹ Ø§Ù„Ø·Ù„Ø¨: <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-1 gap-2">
           {types.map(t => (
             <label key={t.value} className="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors" 
               style={{borderColor: type === t.value ? '#2563eb' : '#e5e7eb'}}>
               <input type="radio" name="type" value={t.value} checked={type === t.value} onChange={(e) => setType(e.target.value)} className="w-4 h-4" />
               <span className="font-semibold">{t.label}</span>
-              {t.value === 'delivery' && <span className="mr-auto bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs">🚗 توصيل</span>}
+              {t.value === 'delivery' && <span className="mr-auto bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs">ðŸš— ØªÙˆØµÙŠÙ„</span>}
             </label>
           ))}
         </div>
       </div>
       
       <div className="mb-4">
-        <label className="block mb-2 font-bold text-gray-700">طريقة الدفع: <span className="text-red-500">*</span></label>
+        <label className="block mb-2 font-bold text-gray-700">Ø·Ø±ÙŠÙ‚Ø© Ø§Ù„Ø¯ÙØ¹: <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-1 gap-2">
           {pms.map(p => (
             <label key={p.value} className="flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer hover:bg-green-50 transition-colors" 
@@ -736,19 +736,19 @@ const CheckoutForm = ({onComplete, onCancel}) => {
         </div>
       </div>
       
-      <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="ملاحظات إضافية..." className="w-full p-3 border-2 rounded-lg mb-4" rows="2" />
+      <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø¥Ø¶Ø§ÙÙŠØ©..." className="w-full p-3 border-2 rounded-lg mb-4" rows="2" />
       
       <div className="flex gap-2 sticky bottom-0 bg-white pt-2">
-        <button onClick={onCancel} className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-lg font-bold hover:bg-gray-600">إلغاء</button>
+        <button onClick={onCancel} className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-lg font-bold hover:bg-gray-600">Ø¥Ù„ØºØ§Ø¡</button>
         <button onClick={() => {
           if (!pm || !source || !type) {
-            alert('⚠️ يرجى تعبئة جميع الحقول المطلوبة');
+            alert('âš ï¸ ÙŠØ±Ø¬Ù‰ ØªØ¹Ø¨Ø¦Ø© Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');
             return;
           }
           onComplete(pm, source, type, notes, needsDelivery);
         }} 
           className="flex-1 bg-green-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-green-700">
-          ✓ تأكيد الطلب
+          âœ“ ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø·Ù„Ø¨
         </button>
       </div>
     </>
@@ -760,16 +760,16 @@ const SettingsForm = ({settings, onSave, onCancel}) => {
   return (
     <>
       <div className="mb-4">
-        <label className="block mb-2 font-bold">تكلفة الموتور اليومية (R$):</label>
+        <label className="block mb-2 font-bold">ØªÙƒÙ„ÙØ© Ø§Ù„Ù…ÙˆØªÙˆØ± Ø§Ù„ÙŠÙˆÙ…ÙŠØ© (R$):</label>
         <input type="number" step="0.01" value={s.dailyMotorcycleCost} onChange={(e) => setS({...s, dailyMotorcycleCost: parseFloat(e.target.value) || 0})} className="w-full p-2 border-2 rounded" />
       </div>
       <div className="mb-4">
-        <label className="block mb-2 font-bold">تكلفة كل توصيلة (R$):</label>
+        <label className="block mb-2 font-bold">ØªÙƒÙ„ÙØ© ÙƒÙ„ ØªÙˆØµÙŠÙ„Ø© (R$):</label>
         <input type="number" step="0.01" value={s.perDeliveryCost} onChange={(e) => setS({...s, perDeliveryCost: parseFloat(e.target.value) || 0})} className="w-full p-2 border-2 rounded" />
       </div>
       <div className="flex gap-2">
-        <button onClick={onCancel} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">إلغاء</button>
-        <button onClick={() => onSave(s)} className="flex-1 bg-orange-600 text-white px-4 py-2 rounded">حفظ</button>
+        <button onClick={onCancel} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">Ø¥Ù„ØºØ§Ø¡</button>
+        <button onClick={() => onSave(s)} className="flex-1 bg-orange-600 text-white px-4 py-2 rounded">Ø­ÙØ¸</button>
       </div>
     </>
   );
@@ -779,90 +779,90 @@ const SalesView = ({analytics: a, settings}) => (
   <div className="space-y-4">
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div className="bg-green-600 text-white p-4 rounded-xl">
-        <p className="text-sm">💰 المبيعات</p>
+        <p className="text-sm">ðŸ’° Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª</p>
         <p className="text-2xl font-bold">R$ {a.totalSales.toFixed(2)}</p>
       </div>
       <div className="bg-blue-600 text-white p-4 rounded-xl">
-        <p className="text-sm">📦 الطلبات</p>
+        <p className="text-sm">ðŸ“¦ Ø§Ù„Ø·Ù„Ø¨Ø§Øª</p>
         <p className="text-2xl font-bold">{a.ordersCount}</p>
-        {a.cancelledCount > 0 && <p className="text-xs">❌ ملغاة: {a.cancelledCount}</p>}
+        {a.cancelledCount > 0 && <p className="text-xs">âŒ Ù…Ù„ØºØ§Ø©: {a.cancelledCount}</p>}
       </div>
       <div className="bg-orange-600 text-white p-4 rounded-xl">
-        <p className="text-sm">🚗 التوصيل</p>
+        <p className="text-sm">ðŸš— Ø§Ù„ØªÙˆØµÙŠÙ„</p>
         <p className="text-2xl font-bold">{a.deliveryCount}</p>
         <p className="text-xs">R$ {a.deliveryCost.toFixed(2)}</p>
       </div>
       <div className="bg-purple-600 text-white p-4 rounded-xl">
-        <p className="text-sm">📈 الربح</p>
+        <p className="text-sm">ðŸ“ˆ Ø§Ù„Ø±Ø¨Ø­</p>
         <p className="text-2xl font-bold">R$ {a.netProfit.toFixed(2)}</p>
       </div>
     </div>
 
     <div className="bg-white rounded-xl p-4 shadow">
-      <h3 className="font-bold mb-3">💳 طرق الدفع</h3>
+      <h3 className="font-bold mb-3">ðŸ’³ Ø·Ø±Ù‚ Ø§Ù„Ø¯ÙØ¹</h3>
       <div className="space-y-2">
         <div className="flex justify-between p-3 bg-green-50 rounded">
-          <span>💵 نقداً (Dinheiro)</span>
+          <span>ðŸ’µ Ù†Ù‚Ø¯Ø§Ù‹ (Dinheiro)</span>
           <span className="font-bold">R$ {a.paymentBreakdown.cash.toFixed(2)}</span>
         </div>
         <div className="flex justify-between p-3 bg-blue-50 rounded">
-          <span>📲 Pix</span>
+          <span>ðŸ“² Pix</span>
           <span className="font-bold">R$ {a.paymentBreakdown.pix.toFixed(2)}</span>
         </div>
         <div className="flex justify-between p-3 bg-indigo-50 rounded">
-          <span>💳 بطاقة (Cartão)</span>
+          <span>ðŸ’³ Ø¨Ø·Ø§Ù‚Ø© (CartÃ£o)</span>
           <span className="font-bold">R$ {a.paymentBreakdown.cartao.toFixed(2)}</span>
         </div>
         <div className="flex justify-between p-3 bg-purple-50 rounded">
-          <span>🍔 بطاقة iFood</span>
+          <span>ðŸ” Ø¨Ø·Ø§Ù‚Ø© iFood</span>
           <span className="font-bold">R$ {a.paymentBreakdown.ifood_card.toFixed(2)}</span>
         </div>
       </div>
     </div>
 
     <div className="bg-white rounded-xl p-4 shadow">
-      <h3 className="font-bold mb-3">📍 مصادر الطلبات</h3>
+      <h3 className="font-bold mb-3">ðŸ“ Ù…ØµØ§Ø¯Ø± Ø§Ù„Ø·Ù„Ø¨Ø§Øª</h3>
       <div className="space-y-2">
         {Object.entries(a.sourceBreakdown).map(([source, count]) => (
           <div key={source} className="flex justify-between p-3 bg-gray-50 rounded">
             <span>
-              {source === 'salon' ? '🏪 صالة' : 
-               source === 'whatsapp' ? '📱 واتساب' :
-               source === 'ifood' ? '🍔 iFood' :
-               source === 'delivery_mush' ? '🚗 Delivery Mush' : '🎁 Amo Oferta'}
+              {source === 'salon' ? 'ðŸª ØµØ§Ù„Ø©' : 
+               source === 'whatsapp' ? 'ðŸ“± ÙˆØ§ØªØ³Ø§Ø¨' :
+               source === 'ifood' ? 'ðŸ” iFood' :
+               source === 'delivery_mush' ? 'ðŸš— Delivery Mush' : 'ðŸŽ Amo Oferta'}
             </span>
-            <span className="font-bold text-purple-600">{count} طلب</span>
+            <span className="font-bold text-purple-600">{count} Ø·Ù„Ø¨</span>
           </div>
         ))}
       </div>
     </div>
 
     <div className="bg-white rounded-xl p-4 shadow">
-      <h3 className="font-bold mb-3">🍽️ أنواع الطلبات</h3>
+      <h3 className="font-bold mb-3">ðŸ½ï¸ Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø·Ù„Ø¨Ø§Øª</h3>
       <div className="space-y-2">
         {Object.entries(a.typeBreakdown).map(([type, count]) => (
           <div key={type} className="flex justify-between p-3 bg-gray-50 rounded">
             <span>
-              {type === 'dine_in' ? '🍽️ أكل في المطعم' : 
-               type === 'takeaway' ? '🥡 أخذ' : '🚗 توصيل'}
+              {type === 'dine_in' ? 'ðŸ½ï¸ Ø£ÙƒÙ„ ÙÙŠ Ø§Ù„Ù…Ø·Ø¹Ù…' : 
+               type === 'takeaway' ? 'ðŸ¥¡ Ø£Ø®Ø°' : 'ðŸš— ØªÙˆØµÙŠÙ„'}
             </span>
-            <span className="font-bold text-blue-600">{count} طلب</span>
+            <span className="font-bold text-blue-600">{count} Ø·Ù„Ø¨</span>
           </div>
         ))}
       </div>
     </div>
 
     <div className="bg-white rounded-xl p-4 shadow">
-      <h3 className="font-bold mb-3">🍔 الأصناف المباعة</h3>
+      <h3 className="font-bold mb-3">ðŸ” Ø§Ù„Ø£ØµÙ†Ø§Ù Ø§Ù„Ù…Ø¨Ø§Ø¹Ø©</h3>
       {Object.keys(a.itemsSold).length === 0 ? (
-        <p className="text-gray-500 text-center py-4">لا توجد مبيعات</p>
+        <p className="text-gray-500 text-center py-4">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¨ÙŠØ¹Ø§Øª</p>
       ) : (
         <div className="space-y-2">
           {Object.entries(a.itemsSold).sort((x, y) => y[1].quantity - x[1].quantity).map(([n, d]) => (
             <div key={n} className="flex justify-between p-3 bg-gray-50 rounded">
               <div>
                 <p className="font-bold">{n}</p>
-                <p className="text-sm text-gray-600">الكمية: {d.quantity}</p>
+                <p className="text-sm text-gray-600">Ø§Ù„ÙƒÙ…ÙŠØ©: {d.quantity}</p>
               </div>
               <p className="font-bold text-green-600">R$ {d.total.toFixed(2)}</p>
             </div>
@@ -873,23 +873,23 @@ const SalesView = ({analytics: a, settings}) => (
 
     <div className="bg-orange-50 rounded-xl p-4 border-2 border-orange-200">
       <h3 className="font-bold mb-3 flex items-center gap-2">
-        🚗 تكلفة التوصيل
+        ðŸš— ØªÙƒÙ„ÙØ© Ø§Ù„ØªÙˆØµÙŠÙ„
       </h3>
       <div className="space-y-2">
         <div className="flex justify-between p-2 bg-white rounded">
-          <span>تكلفة يومية:</span>
+          <span>ØªÙƒÙ„ÙØ© ÙŠÙˆÙ…ÙŠØ©:</span>
           <span className="font-bold">R$ {settings.dailyMotorcycleCost.toFixed(2)}</span>
         </div>
         <div className="flex justify-between p-2 bg-white rounded">
-          <span>عدد التوصيلات:</span>
+          <span>Ø¹Ø¯Ø¯ Ø§Ù„ØªÙˆØµÙŠÙ„Ø§Øª:</span>
           <span className="font-bold">{a.deliveryCount}</span>
         </div>
         <div className="flex justify-between p-2 bg-white rounded">
-          <span>تكلفة التوصيلة:</span>
+          <span>ØªÙƒÙ„ÙØ© Ø§Ù„ØªÙˆØµÙŠÙ„Ø©:</span>
           <span className="font-bold">R$ {settings.perDeliveryCost.toFixed(2)}</span>
         </div>
         <div className="flex justify-between p-3 bg-red-100 rounded border-2 border-red-300">
-          <span className="font-bold">الإجمالي:</span>
+          <span className="font-bold">Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ:</span>
           <span className="font-bold text-red-600">R$ {a.deliveryCost.toFixed(2)}</span>
         </div>
       </div>
@@ -909,12 +909,12 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
 
   const addDiscount = () => {
     if (!newDiscount.itemId || !newDiscount.discountPrice) {
-      alert('يرجى اختيار الصنف والسعر الجديد');
+      alert('ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„ØµÙ†Ù ÙˆØ§Ù„Ø³Ø¹Ø± Ø§Ù„Ø¬Ø¯ÙŠØ¯');
       return;
     }
     const item = items.find(i => i.id === parseInt(newDiscount.itemId));
     if (parseFloat(newDiscount.discountPrice) >= item.price) {
-      alert('سعر الخصم يجب أن يكون أقل من السعر الأصلي');
+      alert('Ø³Ø¹Ø± Ø§Ù„Ø®ØµÙ… ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø£Ù‚Ù„ Ù…Ù† Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ø£ØµÙ„ÙŠ');
       return;
     }
     const discount = { 
@@ -946,7 +946,7 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
 
   const handleSave = () => {
     onSave(localDiscounts);
-    alert('✅ تم حفظ الخصومات بنجاح!');
+    alert('âœ… ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø®ØµÙˆÙ…Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!');
     onClose();
   };
 
@@ -954,51 +954,51 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={onClose}>
       <div className="bg-white rounded-xl p-6 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-red-600">🏷️ إدارة الخصومات</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+          <h2 className="text-2xl font-bold text-red-600">ðŸ·ï¸ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø®ØµÙˆÙ…Ø§Øª</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">âœ•</button>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg mb-4">
-          <h3 className="font-bold mb-3 text-lg">➕ إضافة خصم جديد</h3>
+          <h3 className="font-bold mb-3 text-lg">âž• Ø¥Ø¶Ø§ÙØ© Ø®ØµÙ… Ø¬Ø¯ÙŠØ¯</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
             <div>
-              <label className="block text-sm font-semibold mb-1">الصنف:</label>
+              <label className="block text-sm font-semibold mb-1">Ø§Ù„ØµÙ†Ù:</label>
               <select value={newDiscount.itemId} onChange={(e) => setNewDiscount({...newDiscount, itemId: e.target.value})} className="w-full p-2 border-2 rounded">
-                <option value="">اختر الصنف</option>
+                <option value="">Ø§Ø®ØªØ± Ø§Ù„ØµÙ†Ù</option>
                 {items.map(item => (
                   <option key={item.id} value={item.id}>{item.name} (R$ {item.price.toFixed(2)})</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">السعر بعد الخصم (R$):</label>
-              <input type="number" step="0.01" placeholder="السعر الجديد" value={newDiscount.discountPrice} onChange={(e) => setNewDiscount({...newDiscount, discountPrice: e.target.value})} className="w-full p-2 border-2 rounded" />
+              <label className="block text-sm font-semibold mb-1">Ø§Ù„Ø³Ø¹Ø± Ø¨Ø¹Ø¯ Ø§Ù„Ø®ØµÙ… (R$):</label>
+              <input type="number" step="0.01" placeholder="Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ø¬Ø¯ÙŠØ¯" value={newDiscount.discountPrice} onChange={(e) => setNewDiscount({...newDiscount, discountPrice: e.target.value})} className="w-full p-2 border-2 rounded" />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">تاريخ البداية:</label>
+              <label className="block text-sm font-semibold mb-1">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©:</label>
               <input type="date" value={newDiscount.startDate} onChange={(e) => setNewDiscount({...newDiscount, startDate: e.target.value})} className="w-full p-2 border-2 rounded" />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">تاريخ النهاية:</label>
+              <label className="block text-sm font-semibold mb-1">ØªØ§Ø±ÙŠØ® Ø§Ù„Ù†Ù‡Ø§ÙŠØ©:</label>
               <input type="date" value={newDiscount.endDate} onChange={(e) => setNewDiscount({...newDiscount, endDate: e.target.value})} className="w-full p-2 border-2 rounded" />
             </div>
           </div>
           {newDiscount.itemId && newDiscount.discountPrice && (
             <div className="bg-blue-50 p-3 rounded mb-3 border-2 border-blue-300">
               <p className="text-sm font-semibold text-blue-800">
-                💰 الوفر: R$ {(items.find(i => i.id === parseInt(newDiscount.itemId))?.price - parseFloat(newDiscount.discountPrice)).toFixed(2)}
+                ðŸ’° Ø§Ù„ÙˆÙØ±: R$ {(items.find(i => i.id === parseInt(newDiscount.itemId))?.price - parseFloat(newDiscount.discountPrice)).toFixed(2)}
               </p>
             </div>
           )}
           <button onClick={addDiscount} className="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-red-700 flex items-center justify-center gap-2">
-            ➕ إضافة خصم
+            âž• Ø¥Ø¶Ø§ÙØ© Ø®ØµÙ…
           </button>
         </div>
 
         <div className="space-y-3">
-          <h3 className="font-bold">الخصومات الحالية ({localDiscounts.length})</h3>
+          <h3 className="font-bold">Ø§Ù„Ø®ØµÙˆÙ…Ø§Øª Ø§Ù„Ø­Ø§Ù„ÙŠØ© ({localDiscounts.length})</h3>
           {localDiscounts.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">لا توجد خصومات</p>
+            <p className="text-gray-500 text-center py-8">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø®ØµÙˆÙ…Ø§Øª</p>
           ) : (
             localDiscounts.map(discount => {
               const item = items.find(i => i.id === discount.itemId);
@@ -1014,29 +1014,29 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
                       <h4 className="font-bold text-lg">{item.name}</h4>
                       <div className="flex gap-4 mt-2">
                         <div>
-                          <p className="text-sm text-gray-600">السعر الأصلي</p>
+                          <p className="text-sm text-gray-600">Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ø£ØµÙ„ÙŠ</p>
                           <p className="text-lg line-through text-gray-400">R$ {item.price.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">سعر الخصم</p>
+                          <p className="text-sm text-gray-600">Ø³Ø¹Ø± Ø§Ù„Ø®ØµÙ…</p>
                           <p className="text-lg font-bold text-red-600">R$ {discount.discountPrice.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">الوفر</p>
+                          <p className="text-sm text-gray-600">Ø§Ù„ÙˆÙØ±</p>
                           <p className="text-lg font-bold text-green-600">R$ {(item.price - discount.discountPrice).toFixed(2)}</p>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-2">📅 من {discount.startDate} إلى {discount.endDate}</p>
+                      <p className="text-sm text-gray-600 mt-2">ðŸ“… Ù…Ù† {discount.startDate} Ø¥Ù„Ù‰ {discount.endDate}</p>
                       <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${isActive ? 'bg-green-200 text-green-800' : discount.active ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-800'}`}>
-                        {isActive ? '✅ نشط' : discount.active ? '⏳ منتظر' : '⏸️ متوقف'}
+                        {isActive ? 'âœ… Ù†Ø´Ø·' : discount.active ? 'â³ Ù…Ù†ØªØ¸Ø±' : 'â¸ï¸ Ù…ØªÙˆÙ‚Ù'}
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => toggleDiscount(discount.id)} className={`p-2 rounded ${discount.active ? 'bg-yellow-500' : 'bg-green-500'} text-white`} title={discount.active ? 'إيقاف' : 'تفعيل'}>
-                        {discount.active ? '⏸️' : '▶️'}
+                      <button onClick={() => toggleDiscount(discount.id)} className={`p-2 rounded ${discount.active ? 'bg-yellow-500' : 'bg-green-500'} text-white`} title={discount.active ? 'Ø¥ÙŠÙ‚Ø§Ù' : 'ØªÙØ¹ÙŠÙ„'}>
+                        {discount.active ? 'â¸ï¸' : 'â–¶ï¸'}
                       </button>
-                      <button onClick={() => deleteDiscount(discount.id)} className="p-2 bg-red-600 text-white rounded" title="حذف">
-                        🗑️
+                      <button onClick={() => deleteDiscount(discount.id)} className="p-2 bg-red-600 text-white rounded" title="Ø­Ø°Ù">
+                        ðŸ—‘ï¸
                       </button>
                     </div>
                   </div>
@@ -1047,9 +1047,9 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button onClick={onClose} className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-lg font-bold hover:bg-gray-600">إلغاء</button>
+          <button onClick={onClose} className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-lg font-bold hover:bg-gray-600">Ø¥Ù„ØºØ§Ø¡</button>
           <button onClick={handleSave} className="flex-1 bg-red-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-red-700">
-            حفظ الخصومات ({localDiscounts.length})
+            Ø­ÙØ¸ Ø§Ù„Ø®ØµÙˆÙ…Ø§Øª ({localDiscounts.length})
           </button>
         </div>
       </div>

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Trash2, Edit2, Check, X, UtensilsCrossed, Clock, TrendingUp, Settings, Bike, Download, Upload } from 'lucide-react';
+const { useState, useEffect } = React;
 
 const RestaurantSystem = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -16,16 +15,16 @@ const RestaurantSystem = () => {
   const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
-        const menuData = await window.storage.get('restaurant-menu');
-        const ordersData = await window.storage.get('restaurant-orders');
-        const settingsData = await window.storage.get('restaurant-settings');
-        const discountsData = await window.storage.get('restaurant-discounts');
-        if (menuData) setMenuItems(JSON.parse(menuData.value));
-        if (ordersData) setCompletedOrders(JSON.parse(ordersData.value));
-        if (settingsData) setSettings(JSON.parse(settingsData.value));
-        if (discountsData) setDiscounts(JSON.parse(discountsData.value));
+        const menuData = localStorage.getItem('restaurant-menu');
+        const ordersData = localStorage.getItem('restaurant-orders');
+        const settingsData = localStorage.getItem('restaurant-settings');
+        const discountsData = localStorage.getItem('restaurant-discounts');
+        if (menuData) setMenuItems(JSON.parse(menuData));
+        if (ordersData) setCompletedOrders(JSON.parse(ordersData));
+        if (settingsData) setSettings(JSON.parse(settingsData));
+        if (discountsData) setDiscounts(JSON.parse(discountsData));
       } catch (error) {
         console.log('بدء بيانات جديدة');
       }
@@ -33,23 +32,23 @@ const RestaurantSystem = () => {
     loadData();
   }, []);
 
-  const saveMenu = async (items) => {
-    await window.storage.set('restaurant-menu', JSON.stringify(items));
+  const saveMenu = (items) => {
+    localStorage.setItem('restaurant-menu', JSON.stringify(items));
     setMenuItems(items);
   };
 
-  const saveOrders = async (orders) => {
-    await window.storage.set('restaurant-orders', JSON.stringify(orders));
+  const saveOrders = (orders) => {
+    localStorage.setItem('restaurant-orders', JSON.stringify(orders));
     setCompletedOrders(orders);
   };
 
-  const saveSettings = async (newSettings) => {
-    await window.storage.set('restaurant-settings', JSON.stringify(newSettings));
+  const saveSettings = (newSettings) => {
+    localStorage.setItem('restaurant-settings', JSON.stringify(newSettings));
     setSettings(newSettings);
   };
 
-  const saveDiscounts = async (newDiscounts) => {
-    await window.storage.set('restaurant-discounts', JSON.stringify(newDiscounts));
+  const saveDiscounts = (newDiscounts) => {
+    localStorage.setItem('restaurant-discounts', JSON.stringify(newDiscounts));
     setDiscounts(newDiscounts);
   };
 
@@ -59,7 +58,7 @@ const RestaurantSystem = () => {
       if (!d.active || d.itemId !== item.id) return false;
       const start = new Date(d.startDate);
       const end = new Date(d.endDate);
-      end.setHours(23, 59, 59, 999); // نهاية اليوم
+      end.setHours(23, 59, 59, 999);
       return now >= start && now <= end;
     });
     
@@ -95,6 +94,16 @@ const RestaurantSystem = () => {
       return i;
     });
     saveMenu(newMenu);
+  };
+
+  const updateOrderQuantity = (itemId, newQuantity) => {
+    if (newQuantity <= 0) {
+      setCurrentOrder(currentOrder.filter(item => item.id !== itemId));
+    } else {
+      setCurrentOrder(currentOrder.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
+    }
   };
 
   const exportData = () => {
@@ -136,32 +145,27 @@ const RestaurantSystem = () => {
       const text = await file.text();
       const data = JSON.parse(text);
       
-      // Validate data structure
       if (!data || typeof data !== 'object') {
         throw new Error('Invalid data format');
       }
       
-      // Import menu items
       if (data.menuItems && Array.isArray(data.menuItems)) {
-        await window.storage.set('restaurant-menu', JSON.stringify(data.menuItems));
+        localStorage.setItem('restaurant-menu', JSON.stringify(data.menuItems));
         setMenuItems(data.menuItems);
       }
       
-      // Import orders
       if (data.completedOrders && Array.isArray(data.completedOrders)) {
-        await window.storage.set('restaurant-orders', JSON.stringify(data.completedOrders));
+        localStorage.setItem('restaurant-orders', JSON.stringify(data.completedOrders));
         setCompletedOrders(data.completedOrders);
       }
       
-      // Import settings
       if (data.settings && typeof data.settings === 'object') {
-        await window.storage.set('restaurant-settings', JSON.stringify(data.settings));
+        localStorage.setItem('restaurant-settings', JSON.stringify(data.settings));
         setSettings(data.settings);
       }
 
-      // Import discounts
       if (data.discounts && Array.isArray(data.discounts)) {
-        await window.storage.set('restaurant-discounts', JSON.stringify(data.discounts));
+        localStorage.setItem('restaurant-discounts', JSON.stringify(data.discounts));
         setDiscounts(data.discounts);
       }
       
@@ -172,7 +176,6 @@ const RestaurantSystem = () => {
       alert('❌ خطأ في استيراد البيانات. تأكد من صحة الملف.');
     }
     
-    // Reset file input
     e.target.value = '';
   };
 
@@ -204,7 +207,7 @@ const RestaurantSystem = () => {
       notes,
       date: new Date().toLocaleString('ar-SA'),
       dateOnly: new Date().toLocaleDateString('ar-SA'),
-      status: 'completed' // completed, cancelled
+      status: 'completed'
     };
     saveOrders([order, ...completedOrders]);
     setCurrentOrder([]);
@@ -308,16 +311,16 @@ const RestaurantSystem = () => {
       <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 rounded-xl mb-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <UtensilsCrossed size={28} />
+            <span className="text-2xl">🍽️</span>
             <h1 className="text-2xl font-bold">إدارة المطعم</h1>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setShowSettings(true)} className="bg-white text-orange-600 p-2 rounded-lg">
-              <Settings size={20} />
+              ⚙️
             </button>
             <button onClick={() => setShowCheckout(true)} disabled={currentOrder.length === 0}
               className="relative bg-white text-orange-600 px-4 py-2 rounded-lg flex items-center gap-2 font-bold disabled:opacity-50">
-              <ShoppingCart size={20} />
+              🛒
               {currentOrder.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
                   {currentOrder.reduce((s, i) => s + i.quantity, 0)}
@@ -330,10 +333,10 @@ const RestaurantSystem = () => {
 
       <div className="bg-white rounded-xl mb-4 p-2 flex gap-2 overflow-x-auto">
         <button onClick={() => setView('menu')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'menu' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📋 القائمة</button>
-        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}><TrendingUp className="inline" size={16} /> المبيعات</button>
-        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}><Clock className="inline" size={16} /> الطلبات</button>
+        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📈 المبيعات</button>
+        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>🕐 الطلبات</button>
         <button onClick={() => setShowDiscounts(true)} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">🏷️ الخصومات</button>
-        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap"><Plus size={16} /> إضافة</button>
+        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">➕ إضافة</button>
       </div>
 
       {showAddItem && (
@@ -342,7 +345,7 @@ const RestaurantSystem = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-orange-600">إضافة صنف</h2>
               <button onClick={() => setShowAddItem(false)} className="text-gray-500 hover:text-gray-700">
-                <X size={24} />
+                ✕
               </button>
             </div>
             <input type="text" placeholder="اسم الصنف" value={newItem.name} onChange={(e) => setNewItem({...newItem, name: e.target.value})} className="w-full p-2 border-2 rounded mb-3" />
@@ -366,7 +369,7 @@ const RestaurantSystem = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">إتمام الطلب</h2>
               <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">
-                <X size={28} />
+                ✕
               </button>
             </div>
             <div className="mb-4 bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
@@ -430,10 +433,10 @@ const RestaurantSystem = () => {
           <div className="bg-white rounded-xl p-6 max-w-md w-full my-8" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-orange-600 flex items-center gap-2">
-                <Settings size={24} />الإعدادات
+                ⚙️ الإعدادات
               </h2>
               <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-gray-700">
-                <X size={24} />
+                ✕
               </button>
             </div>
             <SettingsForm settings={settings} onSave={(s) => { saveSettings(s); setShowSettings(false); alert('✅ تم حفظ الإعدادات'); }} onCancel={() => setShowSettings(false)} />
@@ -441,10 +444,10 @@ const RestaurantSystem = () => {
               <h3 className="font-bold mb-3 text-gray-700">📦 النسخ الاحتياطي</h3>
               <div className="space-y-2">
                 <button onClick={exportData} className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-blue-700">
-                  <Download size={20} /> تصدير البيانات (JSON)
+                  ⬇️ تصدير البيانات (JSON)
                 </button>
                 <label className="w-full bg-green-600 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 font-bold hover:bg-green-700 cursor-pointer">
-                  <Upload size={20} /> استيراد النسخة الاحتياطية
+                  ⬆️ استيراد النسخة الاحتياطية
                   <input type="file" accept=".json,application/json" onChange={importData} className="hidden" />
                 </label>
               </div>
@@ -492,15 +495,15 @@ const RestaurantSystem = () => {
                           <input type="text" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} className="w-full p-2 border rounded" />
                           <input type="number" step="0.01" value={editingItem.price} onChange={(e) => setEditingItem({...editingItem, price: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
                           <div className="flex gap-2">
-                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded"><Check size={20} className="mx-auto" /></button>
-                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded"><X size={20} className="mx-auto" /></button>
+                            <button onClick={() => { saveMenu(menuItems.map(p => p.id === editingItem.id ? editingItem : p)); setEditingItem(null); }} className="flex-1 bg-green-600 text-white p-2 rounded">✓</button>
+                            <button onClick={() => setEditingItem(null)} className="flex-1 bg-red-600 text-white p-2 rounded">✕</button>
                           </div>
                         </div>
                       ) : (
                         <>
                           {item.image ? <img src={item.image} alt={item.name} className="w-full h-40 object-cover" /> : 
                             <div className="w-full h-40 bg-gradient-to-br from-orange-200 to-red-200 flex items-center justify-center">
-                              <UtensilsCrossed size={48} className="text-white opacity-50" />
+                              <span className="text-5xl opacity-50">🍽️</span>
                             </div>
                           }
                           <div className="p-4">
@@ -520,17 +523,15 @@ const RestaurantSystem = () => {
                               <button onClick={() => moveItemUp(cat, idx)} disabled={idx === 0} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأعلى">▲</button>
                               <button onClick={() => moveItemDown(cat, idx)} disabled={idx === items.length - 1} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأسفل">▼</button>
                               <button onClick={() => {
-                                const itemPrice = currentPrice; // السعر الحالي (مع أو بدون خصم)
+                                const itemPrice = currentPrice;
                                 const existing = currentOrder.find(o => o.id === item.id);
                                 if (existing) {
-                                  // تحديث الكمية والسعر
                                   setCurrentOrder(currentOrder.map(o => 
                                     o.id === item.id 
                                       ? {...o, quantity: o.quantity + 1, price: itemPrice} 
                                       : o
                                   ));
                                 } else {
-                                  // إضافة صنف جديد بالسعر الحالي
                                   setCurrentOrder([...currentOrder, {
                                     id: item.id,
                                     name: item.name,
@@ -539,10 +540,10 @@ const RestaurantSystem = () => {
                                   }]);
                                 }
                               }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                <ShoppingCart size={16} /> أضف
+                                🛒 أضف
                               </button>
-                              <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"><Edit2 size={16} /></button>
-                              <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700"><Trash2 size={16} /></button>
+                              <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">✏️</button>
+                              <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700">🗑️</button>
                             </div>
                           </div>
                         </>
@@ -555,7 +556,7 @@ const RestaurantSystem = () => {
           })}
           {menuItems.length === 0 && (
             <div className="bg-white rounded-xl p-12 text-center">
-              <UtensilsCrossed size={48} className="mx-auto mb-4 text-gray-300" />
+              <span className="text-5xl mb-4 block">🍽️</span>
               <p className="text-gray-500">لا توجد أصناف</p>
             </div>
           )}
@@ -582,7 +583,7 @@ const RestaurantSystem = () => {
           </div>
 
           {completedOrders.length === 0 ? (
-            <div className="bg-white rounded-xl p-12 text-center"><Clock size={48} className="mx-auto mb-4 text-gray-300" /><p className="text-gray-500">لا توجد طلبات</p></div>
+            <div className="bg-white rounded-xl p-12 text-center"><span className="text-5xl mb-4 block">🕐</span><p className="text-gray-500">لا توجد طلبات</p></div>
           ) : (
             completedOrders.map(o => {
               const isCancelled = o.status === 'cancelled';
@@ -599,14 +600,14 @@ const RestaurantSystem = () => {
                     className={`${isCancelled ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'} text-white p-2 rounded-lg transition-colors`}
                     title={isCancelled ? 'استعادة الطلب' : 'إلغاء الطلب'}
                   >
-                    {isCancelled ? <Check size={16} /> : <X size={16} />}
+                    {isCancelled ? '✓' : '✕'}
                   </button>
                   <button 
                     onClick={() => deleteOrder(o.id)}
                     className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
                     title="حذف نهائي"
                   >
-                    <Trash2 size={16} />
+                    🗑️
                   </button>
                 </div>
                 <div className={`flex justify-between mb-3 border-b pb-3 pr-12 ${isCancelled ? 'opacity-60' : ''}`}>
@@ -702,7 +703,7 @@ const CheckoutForm = ({onComplete, onCancel}) => {
               style={{borderColor: type === t.value ? '#2563eb' : '#e5e7eb'}}>
               <input type="radio" name="type" value={t.value} checked={type === t.value} onChange={(e) => setType(e.target.value)} className="w-4 h-4" />
               <span className="font-semibold">{t.label}</span>
-              {t.value === 'delivery' && <span className="mr-auto bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs"><Bike className="inline" size={12} /> توصيل</span>}
+              {t.value === 'delivery' && <span className="mr-auto bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs">🚗 توصيل</span>}
             </label>
           ))}
         </div>
@@ -858,7 +859,7 @@ const SalesView = ({analytics: a, settings}) => (
 
     <div className="bg-orange-50 rounded-xl p-4 border-2 border-orange-200">
       <h3 className="font-bold mb-3 flex items-center gap-2">
-        <Bike size={20} />تكلفة التوصيل
+        🚗 تكلفة التوصيل
       </h3>
       <div className="space-y-2">
         <div className="flex justify-between p-2 bg-white rounded">
@@ -940,7 +941,7 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
       <div className="bg-white rounded-xl p-6 max-w-3xl w-full my-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-red-600">🏷️ إدارة الخصومات</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700"><X size={24} /></button>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
         </div>
 
         <div className="bg-gray-50 p-4 rounded-lg mb-4">
@@ -976,7 +977,7 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
             </div>
           )}
           <button onClick={addDiscount} className="w-full bg-red-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-red-700 flex items-center justify-center gap-2">
-            <Plus size={20} /> إضافة خصم
+            ➕ إضافة خصم
           </button>
         </div>
 
@@ -1021,7 +1022,7 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
                         {discount.active ? '⏸️' : '▶️'}
                       </button>
                       <button onClick={() => deleteDiscount(discount.id)} className="p-2 bg-red-600 text-white rounded" title="حذف">
-                        <Trash2 size={16} />
+                        🗑️
                       </button>
                     </div>
                   </div>
@@ -1042,4 +1043,12 @@ const DiscountsManager = ({items, discounts, onSave, onClose}) => {
   );
 };
 
-export default RestaurantSystem;
+// Initialize React app
+if (typeof ReactDOM.createRoot !== 'undefined') {
+    // React 18+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(RestaurantSystem));
+} else {
+    // React 17 and below
+    ReactDOM.render(React.createElement(RestaurantSystem), document.getElementById('root'));
+}
