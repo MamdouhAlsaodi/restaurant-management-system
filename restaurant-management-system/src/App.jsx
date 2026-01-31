@@ -13,7 +13,7 @@ const RestaurantSystem = () => {
   const [showDiscounts, setShowDiscounts] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [settings, setSettings] = useState({ dailyMotorcycleCost: 30, perDeliveryCost: 10 });
-  const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+  const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'بلا تصنيف' });
   const [imagePreview, setImagePreview] = useState(null);
   const [dailySalesRecords, setDailySalesRecords] = useState({});
   const [selectedSalesDate, setSelectedSalesDate] = useState(new Date().toLocaleDateString('ar-SA'));
@@ -280,11 +280,11 @@ const RestaurantSystem = () => {
   const addMenuItem = () => {
     if (newItem.name && newItem.price) {
       saveMenu([...menuItems, { id: Date.now(), ...newItem, price: parseFloat(newItem.price) }]);
-      setNewItem({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+      setNewItem({ name: '', price: '', image: '', category: 'بلا تصنيف' });
       setImagePreview(null);
       setShowAddItem(false);
     }
-  };
+  }; 
 
   const getTotal = () => {
     return currentOrder.reduce((sum, item) => {
@@ -398,8 +398,8 @@ const RestaurantSystem = () => {
   };
 
   const categories = [
-    'Mix Arbe Falafel',
-    'Mix Arbe Kibe',
+    'بلا تصنيف',
+    'Mix Arbe',
     'Salda',
     'Fata',
     'Pasta Arbe',
@@ -415,7 +415,8 @@ const RestaurantSystem = () => {
     'Yabrak',
     'Falafel',
     'Bebidas',
-    'Sobremesas'
+    'Sobremesas',
+    'Cola'
   ];
 
   return (

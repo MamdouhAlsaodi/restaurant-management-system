@@ -8,6 +8,14 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%); min-height: 100vh; }
+      .glass-effect { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+      .gradient-header { background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff4500 100%); }
+      .card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+      .hover-lift { transition: all 0.3s ease; }
+      .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -26,7 +34,7 @@ const RestaurantSystem = () => {
   const [showDiscounts, setShowDiscounts] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [settings, setSettings] = useState({ dailyMotorcycleCost: 30, perDeliveryCost: 10 });
-  const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+  const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'بلا تصنيف' });
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
@@ -277,11 +285,11 @@ const RestaurantSystem = () => {
   const addMenuItem = () => {
     if (newItem.name && newItem.price) {
       saveMenu([...menuItems, { id: Date.now(), ...newItem, price: parseFloat(newItem.price) }]);
-      setNewItem({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
+      setNewItem({ name: '', price: '', image: '', category: 'بلا تصنيف' });
       setImagePreview(null);
       setShowAddItem(false);
     }
-  };
+  }; 
 
   const getTotal = () => {
     return currentOrder.reduce((sum, item) => {
@@ -381,9 +389,35 @@ const RestaurantSystem = () => {
     };
   };
 
+  // دالة للحصول على جميع التواريخ المتاحة
+  const getAllDates = () => {
+    const dates = new Set();
+    completedOrders.forEach(o => {
+      if (o.dateOnly) dates.add(o.dateOnly);
+    });
+    return Array.from(dates).sort().reverse();
+  };
+
+  // دالة للحصول على مبيعات تاريخ معين
+  const getSalesForDate = (dateOnly) => {
+    const dateOrders = completedOrders.filter(o => o.dateOnly === dateOnly && o.status !== 'cancelled');
+    const totalSales = dateOrders.reduce((s, o) => s + o.total, 0);
+    const deliveryCount = dateOrders.filter(o => o.needsDelivery).length;
+    const deliveryCost = settings.dailyMotorcycleCost + (deliveryCount * settings.perDeliveryCost);
+    
+    return {
+      totalSales,
+      ordersCount: dateOrders.length,
+      deliveryCount,
+      deliveryCost,
+      netProfit: totalSales - deliveryCost,
+      orders: dateOrders
+    };
+  };
+
   const categories = [
-    'Mix Arbe Falafel',
-    'Mix Arbe Kibe',
+    'بلا تصنيف',
+    'Mix Arbe',
     'Salda',
     'Fata',
     'Pasta Arbe',
@@ -399,26 +433,30 @@ const RestaurantSystem = () => {
     'Yabrak',
     'Falafel',
     'Bebidas',
-    'Sobremesas'
+    'Sobremesas',
+    'Cola'
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4" dir="rtl">
-      <div className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 rounded-xl mb-4">
+    <div className="min-h-screen p-4" dir="rtl">
+      <div className="gradient-header text-white p-6 rounded-2xl mb-6 card-shadow">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🍽️</span>
-            <h1 className="text-2xl font-bold">إدارة المطعم</h1>
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">🍽️</span>
+            <div>
+              <h1 className="text-3xl font-bold">إدارة المطعم</h1>
+              <p className="text-orange-100 text-sm">نظام متكامل لإدارة المبيعات والطلبات</p>
+            </div>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setShowSettings(true)} className="bg-white text-orange-600 p-2 rounded-lg">
+            <button onClick={() => setShowSettings(true)} className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-xl transition">
               ⚙️
             </button>
             <button onClick={() => setShowCheckout(true)} disabled={currentOrder.length === 0}
-              className="relative bg-white text-orange-600 px-4 py-2 rounded-lg flex items-center gap-2 font-bold disabled:opacity-50">
+              className="relative bg-white text-orange-600 px-6 py-3 rounded-xl flex items-center gap-2 font-bold disabled:opacity-50 hover:bg-opacity-90 transition">
               🛒
               {currentOrder.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
+                <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
                   {currentOrder.reduce((s, i) => s + i.quantity, 0)}
                 </span>
               )}
@@ -427,12 +465,13 @@ const RestaurantSystem = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl mb-4 p-2 flex gap-2 overflow-x-auto">
-        <button onClick={() => setView('menu')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'menu' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📋 القائمة</button>
-        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>📈 المبيعات</button>
-        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-bold ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100'}`}>🕐 الطلبات</button>
-        <button onClick={() => setShowDiscounts(true)} className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">🏷️ الخصومات</button>
-        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold whitespace-nowrap">➕ إضافة</button>
+      <div className="glass-effect rounded-2xl mb-6 p-3 flex gap-2 overflow-x-auto card-shadow">
+        <button onClick={() => setView('menu')} className={`flex-1 min-w-[100px] px-4 py-3 rounded-xl font-bold transition ${view === 'menu' ? 'bg-orange-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>📋 القائمة</button>
+        <button onClick={() => setView('sales')} className={`flex-1 min-w-[100px] px-4 py-3 rounded-xl font-bold transition ${view === 'sales' ? 'bg-orange-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>📈 المبيعات</button>
+        <button onClick={() => setView('orders')} className={`flex-1 min-w-[100px] px-4 py-3 rounded-xl font-bold transition ${view === 'orders' ? 'bg-orange-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>🕐 الطلبات</button>
+        <button onClick={() => setView('history')} className={`flex-1 min-w-[100px] px-4 py-3 rounded-xl font-bold transition ${view === 'history' ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>📊 سجل</button>
+        <button onClick={() => setShowDiscounts(true)} className="bg-red-600 text-white px-4 py-3 rounded-xl flex items-center gap-2 font-bold whitespace-nowrap hover:bg-red-700 transition">🏷️ الخصومات</button>
+        <button onClick={() => setShowAddItem(true)} className="bg-green-600 text-white px-4 py-3 rounded-xl flex items-center gap-2 font-bold whitespace-nowrap hover:bg-green-700 transition">➕ إضافة</button>
       </div>
 
       {showAddItem && (
@@ -887,6 +926,76 @@ const RestaurantSystem = () => {
             );
             })
           )}
+        </div>
+      )}
+
+      {/* سجل المبيعات */}
+      {view === 'history' && (
+        <div className="space-y-4">
+          <div className="glass-effect rounded-2xl p-6 card-shadow">
+            <h2 className="text-2xl font-bold text-orange-600 mb-4">📊 سجل المبيعات الشامل</h2>
+            <p className="text-gray-600 mb-6">عرض جميع المبيعات والإحصائيات حسب التاريخ</p>
+            {getAllDates().length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">لا توجد مبيعات مسجلة</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {getAllDates().map(dateOnly => {
+                  const dateSales = getSalesForDate(dateOnly);
+                  return (
+                    <div key={dateOnly} className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 border-r-4 border-orange-600 hover-lift">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-lg font-bold text-gray-800">📅 {dateOnly}</p>
+                          <p className="text-sm text-gray-600">{dateSales.ordersCount} طلب</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-green-600">R$ {dateSales.totalSales.toFixed(2)}</p>
+                          <p className="text-sm text-gray-600">إجمالي المبيعات</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-xs text-gray-600">عدد الطلبات</p>
+                          <p className="text-lg font-bold text-blue-600">{dateSales.ordersCount}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-xs text-gray-600">التوصيلات</p>
+                          <p className="text-lg font-bold text-purple-600">{dateSales.deliveryCount}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-xs text-gray-600">تكلفة التوصيل</p>
+                          <p className="text-lg font-bold text-red-600">R$ {dateSales.deliveryCost.toFixed(2)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-xs text-gray-600">الربح الصافي</p>
+                          <p className={`text-lg font-bold ${dateSales.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>R$ {dateSales.netProfit.toFixed(2)}</p>
+                        </div>
+                      </div>
+                      <details className="cursor-pointer">
+                        <summary className="text-sm font-semibold text-orange-600 hover:text-orange-700">▼ عرض التفاصيل ({dateSales.orders.length} طلب)</summary>
+                        <div className="mt-3 space-y-2 bg-white rounded-lg p-3">
+                          {dateSales.orders.map(order => (
+                            <div key={order.id} className="border-b pb-2 last:border-b-0">
+                              <div className="flex justify-between items-start">
+                                <div className="text-sm">
+                                  <p className="font-semibold text-gray-800">{order.date}</p>
+                                  <p className="text-xs text-gray-600">{order.items.length} أصناف - {order.paymentMethod}</p>
+                                </div>
+                                <p className="font-bold text-green-600">R$ {order.total.toFixed(2)}</p>
+                              </div>
+                              {order.notes && <p className="text-xs text-gray-600 mt-1">📝 {order.notes}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
