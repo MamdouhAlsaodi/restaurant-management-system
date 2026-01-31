@@ -1,5 +1,6 @@
 const { useState, useEffect } = React;
 
+
 const RestaurantSystem = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [currentOrder, setCurrentOrder] = useState([]);
@@ -14,6 +15,8 @@ const RestaurantSystem = () => {
   const [settings, setSettings] = useState({ dailyMotorcycleCost: 30, perDeliveryCost: 10 });
   const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'Mix Arbe Falafel' });
   const [imagePreview, setImagePreview] = useState(null);
+  const [dailySalesRecords, setDailySalesRecords] = useState({});
+  const [selectedSalesDate, setSelectedSalesDate] = useState(new Date().toLocaleDateString('ar-SA'));
 
   useEffect(() => {
     const loadData = () => {
@@ -22,10 +25,12 @@ const RestaurantSystem = () => {
         const ordersData = localStorage.getItem('restaurant-orders');
         const settingsData = localStorage.getItem('restaurant-settings');
         const discountsData = localStorage.getItem('restaurant-discounts');
+        const dailySalesData = localStorage.getItem('restaurant-daily-sales');
         if (menuData) setMenuItems(JSON.parse(menuData));
         if (ordersData) setCompletedOrders(JSON.parse(ordersData));
         if (settingsData) setSettings(JSON.parse(settingsData));
         if (discountsData) setDiscounts(JSON.parse(discountsData));
+        if (dailySalesData) setDailySalesRecords(JSON.parse(dailySalesData));
       } catch (error) {
         console.log('بدء بيانات جديدة');
       }
@@ -51,6 +56,12 @@ const RestaurantSystem = () => {
   const saveDiscounts = (newDiscounts) => {
     localStorage.setItem('restaurant-discounts', JSON.stringify(newDiscounts));
     setDiscounts(newDiscounts);
+  };
+
+  const saveDailySalesRecord = (date, salesData) => {
+    const updated = { ...dailySalesRecords, [date]: salesData };
+    localStorage.setItem('restaurant-daily-sales', JSON.stringify(updated));
+    setDailySalesRecords(updated);
   };
 
   const getItemPrice = (item) => {
@@ -114,8 +125,9 @@ const RestaurantSystem = () => {
         completedOrders: completedOrders,
         settings: settings,
         discounts: discounts,
+        dailySalesRecords: dailySalesRecords,
         exportDate: new Date().toLocaleString('ar-SA'),
-        version: '1.0'
+        version: '1.1'
       };
       
       const jsonString = JSON.stringify(data, null, 2);
@@ -135,6 +147,64 @@ const RestaurantSystem = () => {
     } catch (error) {
       console.error('Export error:', error);
       alert('❌ خطأ في تصدير البيانات');
+    }
+  };
+
+  const exportDailySales = () => {
+    try {
+      const analytics = getSalesAnalytics(selectedSalesDate);
+      const date = selectedSalesDate;
+      const dateOrders = completedOrders.filter(o => o.dateOnly === date && o.status !== 'cancelled');
+      
+      const salesReport = {
+        reportDate: date,
+        exportDate: new Date().toLocaleString('ar-SA'),
+        summary: {
+          totalSales: analytics.totalSales,
+          ordersCount: analytics.ordersCount,
+          cancelledCount: analytics.cancelledCount,
+          deliveryCount: analytics.deliveryCount,
+          deliveryCost: analytics.deliveryCost,
+          netProfit: analytics.netProfit
+        },
+        paymentBreakdown: analytics.paymentBreakdown,
+        sourceBreakdown: analytics.sourceBreakdown,
+        typeBreakdown: analytics.typeBreakdown,
+        itemsSold: analytics.itemsSold,
+        orders: dateOrders.map(o => ({
+          id: o.id,
+          date: o.date,
+          items: o.items,
+          total: o.total,
+          paymentMethod: o.paymentMethod,
+          orderSource: o.orderSource,
+          orderType: o.orderType,
+          needsDelivery: o.needsDelivery,
+          notes: o.notes
+        })),
+        settings: {
+          dailyMotorcycleCost: settings.dailyMotorcycleCost,
+          perDeliveryCost: settings.perDeliveryCost
+        }
+      };
+      
+      const jsonString = JSON.stringify(salesReport, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `daily-sales-${date.replace(/\//g, '-')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      URL.revokeObjectURL(url);
+      
+      alert('✅ تم تصدير تقرير المبيعات اليومية بنجاح!');
+    } catch (error) {
+      console.error('Export sales error:', error);
+      alert('❌ خطأ في تصدير تقرير المبيعات');
     }
   };
 
@@ -168,6 +238,11 @@ const RestaurantSystem = () => {
       if (data.discounts && Array.isArray(data.discounts)) {
         localStorage.setItem('restaurant-discounts', JSON.stringify(data.discounts));
         setDiscounts(data.discounts);
+      }
+
+      if (data.dailySalesRecords && typeof data.dailySalesRecords === 'object') {
+        localStorage.setItem('restaurant-daily-sales', JSON.stringify(data.dailySalesRecords));
+        setDailySalesRecords(data.dailySalesRecords);
       }
       
       alert('✅ تم استيراد البيانات بنجاح!');
@@ -257,18 +332,18 @@ const RestaurantSystem = () => {
     }
   };
 
-  const getSalesAnalytics = () => {
-    const today = new Date().toLocaleDateString('ar-SA');
-    const todayOrders = completedOrders.filter(o => o.dateOnly === today && o.status !== 'cancelled');
-    const totalSales = todayOrders.reduce((s, o) => s + o.total, 0);
+  const getSalesAnalytics = (targetDate = null) => {
+    const date = targetDate || new Date().toLocaleDateString('ar-SA');
+    const dateOrders = completedOrders.filter(o => o.dateOnly === date && o.status !== 'cancelled');
+    const totalSales = dateOrders.reduce((s, o) => s + o.total, 0);
     const paymentBreakdown = { cash: 0, pix: 0, ifood_card: 0, cartao: 0 };
-    todayOrders.forEach(o => { 
+    dateOrders.forEach(o => { 
       if (paymentBreakdown.hasOwnProperty(o.paymentMethod)) {
         paymentBreakdown[o.paymentMethod] += o.total;
       }
     });
     const itemsSold = {};
-    todayOrders.forEach(o => {
+    dateOrders.forEach(o => {
       o.items.forEach(i => {
         if (itemsSold[i.name]) {
           itemsSold[i.name].quantity += i.quantity;
@@ -278,35 +353,48 @@ const RestaurantSystem = () => {
         }
       });
     });
-    const deliveryCount = todayOrders.filter(o => o.needsDelivery).length;
+    const deliveryCount = dateOrders.filter(o => o.needsDelivery).length;
     const deliveryCost = settings.dailyMotorcycleCost + (deliveryCount * settings.perDeliveryCost);
     
     const sourceBreakdown = {};
-    todayOrders.forEach(o => {
+    dateOrders.forEach(o => {
       if (!sourceBreakdown[o.orderSource]) sourceBreakdown[o.orderSource] = 0;
       sourceBreakdown[o.orderSource]++;
     });
     
     const typeBreakdown = {};
-    todayOrders.forEach(o => {
+    dateOrders.forEach(o => {
       if (!typeBreakdown[o.orderType]) typeBreakdown[o.orderType] = 0;
       typeBreakdown[o.orderType]++;
     });
     
-    const cancelledCount = completedOrders.filter(o => o.dateOnly === today && o.status === 'cancelled').length;
+    const cancelledCount = completedOrders.filter(o => o.dateOnly === date && o.status === 'cancelled').length;
     
-    return {
+    const analytics = {
+      date,
       totalSales,
       paymentBreakdown,
       itemsSold,
       deliveryCount,
       deliveryCost,
       netProfit: totalSales - deliveryCost,
-      ordersCount: todayOrders.length,
+      ordersCount: dateOrders.length,
       sourceBreakdown,
       typeBreakdown,
       cancelledCount
     };
+
+    // حفظ السجل اليومي تلقائياً
+    if (!targetDate || targetDate === new Date().toLocaleDateString('ar-SA')) {
+      const today = new Date().toLocaleDateString('ar-SA');
+      saveDailySalesRecord(today, {
+        ...analytics,
+        orders: dateOrders,
+        savedAt: new Date().toLocaleString('ar-SA')
+      });
+    }
+    
+    return analytics;
   };
 
   const categories = [
@@ -524,8 +612,92 @@ const RestaurantSystem = () => {
 
       {view === 'menu' && (
         <div>
+          {/* عرض الأصناف المفضلة في الأعلى */}
+          {(() => {
+            const favoriteItems = menuItems.filter(i => i.isFavorite);
+            if (favoriteItems.length > 0) {
+              return (
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold mb-3 text-yellow-600 bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg flex items-center gap-2">
+                    ⭐ الأصناف المفضلة (للوصول السريع)
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {favoriteItems.map((item) => {
+                      const currentPrice = getItemPrice(item);
+                      const hasDiscount = currentPrice < item.price;
+                      return (
+                        <div key={item.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-lg overflow-hidden relative border-2 border-yellow-300">
+                          {hasDiscount && (
+                            <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
+                              🏷️ خصم
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
+                            ⭐
+                          </div>
+                          {item.image ? <img src={item.image} alt={item.name} className="w-full h-40 object-cover" /> : 
+                            <div className="w-full h-40 bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center">
+                              <span className="text-5xl opacity-50">🍽️</span>
+                            </div>
+                          }
+                          <div className="p-4">
+                            <h3 className="text-lg font-bold mb-2">{item.name}</h3>
+                            {item.description && <p className="text-sm text-gray-600 mb-2">{item.description}</p>}
+                            <div className="mb-3">
+                              {hasDiscount ? (
+                                <div>
+                                  <p className="text-lg text-gray-400 line-through">R$ {item.price.toFixed(2)}</p>
+                                  <p className="text-2xl font-bold text-red-600">R$ {currentPrice.toFixed(2)}</p>
+                                </div>
+                              ) : (
+                                <p className="text-2xl font-bold text-green-600">R$ {currentPrice.toFixed(2)}</p>
+                              )}
+                            </div>
+                            <div className="flex gap-1">
+                              <button onClick={() => {
+                                const itemPrice = currentPrice;
+                                const existing = currentOrder.find(o => o.id === item.id);
+                                if (existing) {
+                                  setCurrentOrder(currentOrder.map(o => 
+                                    o.id === item.id 
+                                      ? {...o, quantity: o.quantity + 1, price: itemPrice} 
+                                      : o
+                                  ));
+                                } else {
+                                  setCurrentOrder([...currentOrder, {
+                                    id: item.id,
+                                    name: item.name,
+                                    quantity: 1,
+                                    price: itemPrice
+                                  }]);
+                                }
+                              }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
+                                🛒 أضف
+                              </button>
+                              <button onClick={() => {
+                                saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: false} : p));
+                              }} className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" title="إزالة من المفضلة">
+                                ⭐
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
+          
           {categories.map(cat => {
-            const items = menuItems.filter(i => i.category === cat).sort((a, b) => (a.order || 0) - (b.order || 0));
+            const items = menuItems.filter(i => i.category === cat).sort((a, b) => {
+              // ترتيب: المفضلة أولاً، ثم حسب order
+              if (a.isFavorite && !b.isFavorite) return -1;
+              if (!a.isFavorite && b.isFavorite) return 1;
+              return (a.order || 0) - (b.order || 0);
+            });
             if (items.length === 0) return null;
             return (
               <div key={cat} className="mb-4">
@@ -618,6 +790,16 @@ const RestaurantSystem = () => {
                               }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
                                 🛒 أضف
                               </button>
+                              <button onClick={() => {
+                                saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: !p.isFavorite} : p));
+                                if (!item.isFavorite) {
+                                  alert('✅ تم إضافة الصنف إلى المفضلة! سيظهر في الأعلى');
+                                } else {
+                                  alert('✅ تم إزالة الصنف من المفضلة');
+                                }
+                              }} className={`p-2 rounded ${item.isFavorite ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'} hover:bg-yellow-600`} title={item.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}>
+                                ⭐
+                              </button>
                               <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">✏️</button>
                               <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700">🗑️</button>
                             </div>
@@ -639,7 +821,14 @@ const RestaurantSystem = () => {
         </div>
       )}
 
-      {view === 'sales' && <SalesView analytics={getSalesAnalytics()} settings={settings} />}
+      {view === 'sales' && <SalesView 
+        analytics={getSalesAnalytics(selectedSalesDate)} 
+        settings={settings} 
+        onExportSales={exportDailySales}
+        selectedDate={selectedSalesDate}
+        onDateChange={setSelectedSalesDate}
+        availableDates={Object.keys(dailySalesRecords).sort().reverse()}
+      />}
 
       {view === 'orders' && (
         <div className="space-y-4">
@@ -837,8 +1026,52 @@ const SettingsForm = ({settings, onSave, onCancel}) => {
   );
 };
 
-const SalesView = ({analytics: a, settings}) => (
+const SalesView = ({analytics: a, settings, onExportSales, selectedDate, onDateChange, availableDates}) => (
   <div className="space-y-4">
+    <div className="bg-white rounded-xl p-4 shadow">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <h2 className="text-2xl font-bold text-green-600">📊 تقرير المبيعات</h2>
+        <div className="flex gap-2 items-center flex-wrap">
+          <label className="text-sm font-semibold text-gray-700">اختر التاريخ:</label>
+          <input 
+            type="date" 
+            value={selectedDate ? (() => {
+              const [day, month, year] = selectedDate.split('/');
+              return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            })() : ''}
+            onChange={(e) => {
+              const dateStr = e.target.value;
+              if (dateStr) {
+                const [year, month, day] = dateStr.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+                onDateChange(formattedDate);
+              }
+            }}
+            className="p-2 border-2 rounded-lg"
+          />
+          <button onClick={onExportSales} className="bg-green-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 font-bold hover:bg-green-700">
+            📥 تصدير
+          </button>
+        </div>
+      </div>
+      {availableDates && availableDates.length > 0 && (
+        <div className="bg-gray-50 p-3 rounded-lg">
+          <p className="text-sm text-gray-600 mb-2">📅 التواريخ المتاحة:</p>
+          <div className="flex flex-wrap gap-2">
+            {availableDates.map(date => (
+              <button
+                key={date}
+                onClick={() => onDateChange(date)}
+                className={`px-3 py-1 rounded text-sm ${selectedDate === date ? 'bg-green-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-200'}`}
+              >
+                {date}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+    
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div className="bg-green-600 text-white p-4 rounded-xl">
         <p className="text-sm">💰 المبيعات</p>
