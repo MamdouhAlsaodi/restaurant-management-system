@@ -15,6 +15,11 @@ const RestaurantSystem = () => {
   const [settings, setSettings] = useState({ dailyMotorcycleCost: 30, perDeliveryCost: 10 });
   const [newItem, setNewItem] = useState({ name: '', price: '', image: '', category: 'بلا تصنيف' });
   const [imagePreview, setImagePreview] = useState(null);
+  const [addQuantities, setAddQuantities] = useState({});
+  const [editingQtyId, setEditingQtyId] = useState(null);
+  const [tempQty, setTempQty] = useState('');
+  const [editingOrder, setEditingOrder] = useState({ orderId: null, itemId: null });
+  const [tempOrderQty, setTempOrderQty] = useState('');
   const [dailySalesRecords, setDailySalesRecords] = useState({});
   const [selectedSalesDate, setSelectedSalesDate] = useState(new Date().toLocaleDateString('ar-SA'));
 
@@ -294,6 +299,71 @@ const RestaurantSystem = () => {
     }, 0);
   };
 
+  const handleAddToOrder = (item, qty = 1) => {
+    const q = parseInt(qty, 10) || 1;
+    const itemPrice = getItemPrice(item);
+    const existing = currentOrder.find(o => o.id === item.id);
+    let newQuantity = q;
+    if (existing) {
+      newQuantity = existing.quantity + q;
+      setCurrentOrder(currentOrder.map(o => 
+        o.id === item.id 
+          ? {...o, quantity: o.quantity + q, price: itemPrice} 
+          : o
+      ));
+    } else {
+      setCurrentOrder([...currentOrder, {
+        id: item.id,
+        name: item.name,
+        quantity: q,
+        price: itemPrice
+      }]);
+    }
+    // focus editable quantity for immediate keyboard edit
+    setEditingQtyId(item.id);
+    setTempQty(String(newQuantity));
+    // reset the add-quantity input for this item to 1
+    setAddQuantities(prev => ({ ...prev, [item.id]: 1 }));
+  };
+
+  const commitQty = (itemId, value) => {
+    const q = parseInt(value, 10);
+    if (!q || q <= 0) {
+      // remove item
+      setCurrentOrder(currentOrder.filter(it => it.id !== itemId));
+    } else {
+      updateOrderQuantity(itemId, q);
+    }
+    setEditingQtyId(null);
+    setTempQty('');
+  };
+
+  const commitOrderItemQty = (orderId, itemId, value) => {
+    const q = parseInt(value, 10);
+    const updated = completedOrders.map(o => {
+      if (o.id !== orderId) return o;
+      let items = o.items.map(it => it.id === itemId ? { ...it, quantity: q || 0 } : it);
+      items = items.filter(it => it.quantity > 0);
+      const total = items.reduce((s, it) => s + (it.price * it.quantity), 0);
+      return { ...o, items, total };
+    });
+    saveOrders(updated);
+    setEditingOrder({ orderId: null, itemId: null });
+    setTempOrderQty('');
+  };
+
+  const updateOrderItemQuantity = (orderId, itemId, newQty) => {
+    const q = parseInt(newQty, 10) || 0;
+    const updated = completedOrders.map(o => {
+      if (o.id !== orderId) return o;
+      let items = o.items.map(it => it.id === itemId ? { ...it, quantity: q } : it);
+      items = items.filter(it => it.quantity > 0);
+      const total = items.reduce((s, it) => s + (it.price * it.quantity), 0);
+      return { ...o, items, total };
+    });
+    saveOrders(updated);
+  };
+
   const completeOrder = (paymentMethod, orderSource, orderType, notes, needsDelivery) => {
     const order = {
       id: Date.now(),
@@ -432,10 +502,10 @@ const RestaurantSystem = () => {
               ⚙️
             </button>
             <button onClick={() => setShowCheckout(true)} disabled={currentOrder.length === 0}
-              className="relative bg-white text-orange-600 px-4 py-2 rounded-lg flex items-center gap-2 font-bold disabled:opacity-50">
-              🛒
+              className="relative bg-white text-orange-600 px-6 py-3 rounded-lg flex items-center gap-2 font-bold disabled:opacity-50">
+              <span className="text-xl">🛒</span>
               {currentOrder.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
+                <span className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm">
                   {currentOrder.reduce((s, i) => s + i.quantity, 0)}
                 </span>
               )}
@@ -512,7 +582,7 @@ const RestaurantSystem = () => {
                 ✕
               </button>
             </div>
-            <div className="mb-4 bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
+            <div className="mb-4 bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
               <h3 className="font-bold mb-3 text-gray-700">🛒 عناصر الطلب:</h3>
               {currentOrder.map(i => {
                 const itemTotal = (i.price || 0) * (i.quantity || 0);
@@ -546,11 +616,27 @@ const RestaurantSystem = () => {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => updateOrderQuantity(i.id, i.quantity - 1)} className="bg-red-500 text-white w-7 h-7 rounded flex items-center justify-center hover:bg-red-600">-</button>
-                        <span className="font-bold w-8 text-center">{i.quantity}</span>
-                        <button onClick={() => updateOrderQuantity(i.id, i.quantity + 1)} className="bg-green-500 text-white w-7 h-7 rounded flex items-center justify-center hover:bg-green-600">+</button>
-                        <span className="font-bold text-green-600 ml-2 min-w-[60px] text-right">R$ {itemTotal.toFixed(2)}</span>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => updateOrderQuantity(i.id, i.quantity - 1)} className="bg-red-500 text-white w-10 h-10 rounded flex items-center justify-center hover:bg-red-600">-</button>
+                        {editingQtyId === i.id ? (
+                          <input
+                            type="number"
+                            min="1"
+                            value={tempQty}
+                            onChange={(e) => setTempQty(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') commitQty(i.id, tempQty);
+                              if (e.key === 'Escape') { setEditingQtyId(null); setTempQty(''); }
+                            }}
+                            onBlur={() => commitQty(i.id, tempQty)}
+                            autoFocus
+                            className="w-20 p-1 text-center border rounded"
+                          />
+                        ) : (
+                          <span onDoubleClick={() => { setEditingQtyId(i.id); setTempQty(String(i.quantity)); }} className="font-bold w-20 text-center cursor-pointer select-none">{i.quantity}</span>
+                        )}
+                        <button onClick={() => updateOrderQuantity(i.id, i.quantity + 1)} className="bg-green-500 text-white w-10 h-10 rounded flex items-center justify-center hover:bg-green-600">+</button>
+                        <span className="font-bold text-green-600 ml-2 min-w-[80px] text-right">R$ {itemTotal.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -654,32 +740,43 @@ const RestaurantSystem = () => {
                                 <p className="text-2xl font-bold text-green-600">R$ {currentPrice.toFixed(2)}</p>
                               )}
                             </div>
-                            <div className="flex gap-1">
-                              <button onClick={() => {
-                                const itemPrice = currentPrice;
-                                const existing = currentOrder.find(o => o.id === item.id);
-                                if (existing) {
-                                  setCurrentOrder(currentOrder.map(o => 
-                                    o.id === item.id 
-                                      ? {...o, quantity: o.quantity + 1, price: itemPrice} 
-                                      : o
-                                  ));
-                                } else {
-                                  setCurrentOrder([...currentOrder, {
-                                    id: item.id,
-                                    name: item.name,
-                                    quantity: 1,
-                                    price: itemPrice
-                                  }]);
+                            <div className="flex gap-2 items-center">
+                              {(() => {
+                                const inOrder = currentOrder.find(o => o.id === item.id);
+                                if (inOrder) {
+                                  return (
+                                    <>
+                                      <button onClick={() => updateOrderQuantity(item.id, inOrder.quantity - 1)} className="bg-red-500 text-white p-2 rounded hover:bg-red-600">-</button>
+                                      {editingQtyId === item.id ? (
+                                        <input
+                                          type="number"
+                                          min="1"
+                                          value={tempQty}
+                                          onChange={(e) => setTempQty(e.target.value)}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') commitQty(item.id, tempQty);
+                                            if (e.key === 'Escape') { setEditingQtyId(null); setTempQty(''); }
+                                          }}
+                                          onBlur={() => commitQty(item.id, tempQty)}
+                                          autoFocus
+                                          className="w-20 p-2 border-2 rounded text-center"
+                                        />
+                                      ) : (
+                                        <span onDoubleClick={() => { setEditingQtyId(item.id); setTempQty(String(inOrder.quantity)); }} className="w-20 p-2 text-center font-bold cursor-pointer select-none">{inOrder.quantity}</span>
+                                      )}
+                                      <button onClick={() => updateOrderQuantity(item.id, inOrder.quantity + 1)} className="bg-green-500 text-white p-2 rounded hover:bg-green-600">+</button>
+                                      <button onClick={() => saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: false} : p))} className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" title="إزالة من المفضلة">⭐</button>
+                                    </>
+                                  );
                                 }
-                              }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                🛒 أضف
-                              </button>
-                              <button onClick={() => {
-                                saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: false} : p));
-                              }} className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" title="إزالة من المفضلة">
-                                ⭐
-                              </button>
+                                return (
+                                  <>
+                                    <input type="number" min="1" value={addQuantities[item.id] || 1} onChange={(e) => setAddQuantities(prev => ({ ...prev, [item.id]: e.target.value }))} className="w-20 p-2 border-2 rounded text-center" />
+                                    <button onClick={() => handleAddToOrder(item, addQuantities[item.id] || 1)} className="bg-orange-600 text-white px-3 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">🛒 أضف</button>
+                                    <button onClick={() => saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: false} : p))} className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" title="إزالة من المفضلة">⭐</button>
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         </div>
@@ -768,39 +865,59 @@ const RestaurantSystem = () => {
                                 <p className="text-2xl font-bold text-green-600">R$ {currentPrice.toFixed(2)}</p>
                               )}
                             </div>
-                            <div className="flex gap-1 mb-2">
+                            <div className="flex gap-1 mb-2 items-center">
                               <button onClick={() => moveItemUp(cat, idx)} disabled={idx === 0} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأعلى">▲</button>
                               <button onClick={() => moveItemDown(cat, idx)} disabled={idx === items.length - 1} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأسفل">▼</button>
-                              <button onClick={() => {
-                                const itemPrice = currentPrice;
-                                const existing = currentOrder.find(o => o.id === item.id);
-                                if (existing) {
-                                  setCurrentOrder(currentOrder.map(o => 
-                                    o.id === item.id 
-                                      ? {...o, quantity: o.quantity + 1, price: itemPrice} 
-                                      : o
-                                  ));
-                                } else {
-                                  setCurrentOrder([...currentOrder, {
-                                    id: item.id,
-                                    name: item.name,
-                                    quantity: 1,
-                                    price: itemPrice
-                                  }]);
+                              {(() => {
+                                const inOrder = currentOrder.find(o => o.id === item.id);
+                                if (inOrder) {
+                                  return (
+                                    <>
+                                      <button onClick={() => updateOrderQuantity(item.id, inOrder.quantity - 1)} className="bg-red-500 text-white p-2 rounded hover:bg-red-600">-</button>
+                                      {editingQtyId === item.id ? (
+                                        <input
+                                          type="number"
+                                          min="1"
+                                          value={tempQty}
+                                          onChange={(e) => setTempQty(e.target.value)}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') commitQty(item.id, tempQty);
+                                            if (e.key === 'Escape') { setEditingQtyId(null); setTempQty(''); }
+                                          }}
+                                          onBlur={() => commitQty(item.id, tempQty)}
+                                          autoFocus
+                                          className="w-20 p-2 border-2 rounded text-center"
+                                        />
+                                      ) : (
+                                        <span onDoubleClick={() => { setEditingQtyId(item.id); setTempQty(String(inOrder.quantity)); }} className="w-20 p-2 text-center font-bold cursor-pointer select-none">{inOrder.quantity}</span>
+                                      )}
+                                      <button onClick={() => updateOrderQuantity(item.id, inOrder.quantity + 1)} className="bg-green-500 text-white p-2 rounded hover:bg-green-600">+</button>
+                                      <button onClick={() => {
+                                        saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: !p.isFavorite} : p));
+                                        if (!item.isFavorite) {
+                                          alert('✅ تم إضافة الصنف إلى المفضلة! سيظهر في الأعلى');
+                                        } else {
+                                          alert('✅ تم إزالة الصنف من المفضلة');
+                                        }
+                                      }} className={`p-2 rounded ${item.isFavorite ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'} hover:bg-yellow-600`} title={item.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}>⭐</button>
+                                    </>
+                                  );
                                 }
-                              }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                🛒 أضف
-                              </button>
-                              <button onClick={() => {
-                                saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: !p.isFavorite} : p));
-                                if (!item.isFavorite) {
-                                  alert('✅ تم إضافة الصنف إلى المفضلة! سيظهر في الأعلى');
-                                } else {
-                                  alert('✅ تم إزالة الصنف من المفضلة');
-                                }
-                              }} className={`p-2 rounded ${item.isFavorite ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'} hover:bg-yellow-600`} title={item.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}>
-                                ⭐
-                              </button>
+                                return (
+                                  <>
+                                    <input type="number" min="1" value={addQuantities[item.id] || 1} onChange={(e) => setAddQuantities(prev => ({ ...prev, [item.id]: e.target.value }))} className="w-20 p-2 border-2 rounded text-center" />
+                                    <button onClick={() => handleAddToOrder(item, addQuantities[item.id] || 1)} className="bg-orange-600 text-white px-3 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">🛒 أضف</button>
+                                    <button onClick={() => {
+                                      saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: !p.isFavorite} : p));
+                                      if (!item.isFavorite) {
+                                        alert('✅ تم إضافة الصنف إلى المفضلة! سيظهر في الأعلى');
+                                      } else {
+                                        alert('✅ تم إزالة الصنف من المفضلة');
+                                      }
+                                    }} className={`p-2 rounded ${item.isFavorite ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'} hover:bg-yellow-600`} title={item.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}>⭐</button>
+                                  </>
+                                );
+                              })()}
                               <button onClick={() => setEditingItem(item)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">✏️</button>
                               <button onClick={() => saveMenu(menuItems.filter(p => p.id !== item.id))} className="bg-red-600 text-white p-2 rounded hover:bg-red-700">🗑️</button>
                             </div>
@@ -900,12 +1017,40 @@ const RestaurantSystem = () => {
                   </div>
                   <p className={`text-2xl font-bold ${isCancelled ? 'text-red-600 line-through' : 'text-green-600'}`}>R$ {o.total.toFixed(2)}</p>
                 </div>
-                {o.items.map((i, idx) => (
-                  <div key={idx} className={`flex justify-between bg-gray-50 p-2 rounded mb-1 ${isCancelled ? 'opacity-60' : ''}`}>
-                    <span>{i.name} × {i.quantity}</span>
-                    <span>R$ {(i.price * i.quantity).toFixed(2)}</span>
-                  </div>
-                ))}
+                {o.items.map((i, idx) => {
+                  const editingThis = editingOrder.orderId === o.id && editingOrder.itemId === i.id;
+                  return (
+                    <div key={idx} className={`flex justify-between bg-gray-50 p-2 rounded mb-1 ${isCancelled ? 'opacity-60' : ''}`}>
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold">{i.name}</span>
+                        {!isCancelled && (
+                          <>
+                            <button onClick={() => updateOrderItemQuantity(o.id, i.id, i.quantity - 1)} className="bg-red-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-red-600">-</button>
+                            {editingThis ? (
+                              <input
+                                type="number"
+                                min="1"
+                                value={tempOrderQty}
+                                onChange={(e) => setTempOrderQty(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') commitOrderItemQty(o.id, i.id, tempOrderQty);
+                                  if (e.key === 'Escape') { setEditingOrder({ orderId: null, itemId: null }); setTempOrderQty(''); }
+                                }}
+                                onBlur={() => commitOrderItemQty(o.id, i.id, tempOrderQty)}
+                                autoFocus
+                                className="w-20 p-1 text-center border rounded"
+                              />
+                            ) : (
+                              <span onDoubleClick={() => { setEditingOrder({ orderId: o.id, itemId: i.id }); setTempOrderQty(String(i.quantity)); }} className="w-20 text-center font-bold cursor-pointer select-none">{i.quantity}</span>
+                            )}
+                            <button onClick={() => updateOrderItemQuantity(o.id, i.id, i.quantity + 1)} className="bg-green-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-green-600">+</button>
+                          </>
+                        )}
+                      </div>
+                      <span>R$ {(i.price * i.quantity).toFixed(2)}</span>
+                    </div>
+                  );
+                })}
                 {o.notes && <div className={`mt-2 bg-yellow-50 p-2 rounded text-sm ${isCancelled ? 'opacity-60' : ''}`}><strong>📝 ملاحظات:</strong> {o.notes}</div>}
               </div>
             );

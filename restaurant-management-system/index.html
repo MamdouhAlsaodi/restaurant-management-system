@@ -727,8 +727,9 @@ const RestaurantSystem = () => {
                     {favoriteItems.map((item) => {
                       const currentPrice = getItemPrice(item);
                       const hasDiscount = currentPrice < item.price;
+                      const existing = currentOrder.find(o => o.id === item.id);
                       return (
-                        <div key={item.id} className="food-card hover-lift bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-lg overflow-hidden relative border-2 border-yellow-300">
+                          <div key={item.id} className="food-card hover-lift bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-lg overflow-hidden relative border-2 border-yellow-300">
                           {hasDiscount && (
                             <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
                               🏷️ خصم
@@ -756,26 +757,45 @@ const RestaurantSystem = () => {
                               )}
                             </div>
                             <div className="flex gap-1">
-                              <button onClick={() => {
-                                const itemPrice = currentPrice;
-                                const existing = currentOrder.find(o => o.id === item.id);
-                                if (existing) {
-                                  setCurrentOrder(currentOrder.map(o => 
-                                    o.id === item.id 
-                                      ? {...o, quantity: o.quantity + 1, price: itemPrice} 
-                                      : o
-                                  ));
-                                } else {
-                                  setCurrentOrder([...currentOrder, {
-                                    id: item.id,
-                                    name: item.name,
-                                    quantity: 1,
-                                    price: itemPrice
-                                  }]);
-                                }
-                              }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                🛒 أضف
-                              </button>
+                              {existing ? (
+                                <div className="flex items-center gap-2">
+                                  <button onClick={() => updateOrderQuantity(item.id, existing.quantity - 1)} className="bg-red-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-red-600">-</button>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={existing.quantity}
+                                    onChange={(e) => {
+                                      const v = parseInt(e.target.value, 10) || 0;
+                                      updateOrderQuantity(item.id, v);
+                                    }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+                                    className="w-16 text-center p-1 border rounded"
+                                    aria-label={`كمية ${item.name}`}
+                                  />
+                                  <button onClick={() => updateOrderQuantity(item.id, existing.quantity + 1)} className="bg-green-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-green-600">+</button>
+                                </div>
+                              ) : (
+                                <button onClick={() => {
+                                  const itemPrice = currentPrice;
+                                  const existing2 = currentOrder.find(o => o.id === item.id);
+                                  if (existing2) {
+                                    setCurrentOrder(currentOrder.map(o => 
+                                      o.id === item.id 
+                                        ? {...o, quantity: o.quantity + 1, price: itemPrice} 
+                                        : o
+                                    ));
+                                  } else {
+                                    setCurrentOrder([...currentOrder, {
+                                      id: item.id,
+                                      name: item.name,
+                                      quantity: 1,
+                                      price: itemPrice
+                                    }]);
+                                  }
+                                }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
+                                  🛒 أضف
+                                </button>
+                              )}
                               <button onClick={() => {
                                 saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: false} : p));
                               }} className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" title="إزالة من المفضلة">
@@ -808,6 +828,7 @@ const RestaurantSystem = () => {
                   {items.map((item, idx) => {
                     const currentPrice = getItemPrice(item);
                     const hasDiscount = currentPrice < item.price;
+                    const existing = currentOrder.find(o => o.id === item.id);
                     return (
                     <div key={item.id} className="food-card hover-lift bg-white rounded-xl shadow-lg overflow-hidden relative">
                       {hasDiscount && (
@@ -872,26 +893,45 @@ const RestaurantSystem = () => {
                             <div className="flex gap-1 mb-2">
                               <button onClick={() => moveItemUp(cat, idx)} disabled={idx === 0} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأعلى">▲</button>
                               <button onClick={() => moveItemDown(cat, idx)} disabled={idx === items.length - 1} className="bg-gray-400 text-white p-2 rounded disabled:opacity-30" title="تحريك للأسفل">▼</button>
-                              <button onClick={() => {
-                                const itemPrice = currentPrice;
-                                const existing = currentOrder.find(o => o.id === item.id);
-                                if (existing) {
-                                  setCurrentOrder(currentOrder.map(o => 
-                                    o.id === item.id 
-                                      ? {...o, quantity: o.quantity + 1, price: itemPrice} 
-                                      : o
-                                  ));
-                                } else {
-                                  setCurrentOrder([...currentOrder, {
-                                    id: item.id,
-                                    name: item.name,
-                                    quantity: 1,
-                                    price: itemPrice
-                                  }]);
-                                }
-                              }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
-                                🛒 أضف
-                              </button>
+                              {existing ? (
+                                <div className="flex items-center gap-2">
+                                  <button onClick={() => updateOrderQuantity(item.id, existing.quantity - 1)} className="bg-red-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-red-600">-</button>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={existing.quantity}
+                                    onChange={(e) => {
+                                      const v = parseInt(e.target.value, 10) || 0;
+                                      updateOrderQuantity(item.id, v);
+                                    }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+                                    className="w-16 text-center p-1 border rounded"
+                                    aria-label={`كمية ${item.name}`}
+                                  />
+                                  <button onClick={() => updateOrderQuantity(item.id, existing.quantity + 1)} className="bg-green-500 text-white w-8 h-8 rounded flex items-center justify-center hover:bg-green-600">+</button>
+                                </div>
+                              ) : (
+                                <button onClick={() => {
+                                  const itemPrice = currentPrice;
+                                  const existing2 = currentOrder.find(o => o.id === item.id);
+                                  if (existing2) {
+                                    setCurrentOrder(currentOrder.map(o => 
+                                      o.id === item.id 
+                                        ? {...o, quantity: o.quantity + 1, price: itemPrice} 
+                                        : o
+                                    ));
+                                  } else {
+                                    setCurrentOrder([...currentOrder, {
+                                      id: item.id,
+                                      name: item.name,
+                                      quantity: 1,
+                                      price: itemPrice
+                                    }]);
+                                  }
+                                }} className="flex-1 bg-orange-600 text-white px-2 py-2 rounded flex items-center justify-center gap-1 font-bold hover:bg-orange-700">
+                                  🛒 أضف
+                                </button>
+                              )}
                               <button onClick={() => {
                                 saveMenu(menuItems.map(p => p.id === item.id ? {...p, isFavorite: !p.isFavorite} : p));
                                 if (!item.isFavorite) {
