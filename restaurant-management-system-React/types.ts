@@ -1,4 +1,6 @@
 
+export type Language = 'ar' | 'en' | 'pt';
+
 export interface MenuItem {
   id: number;
   name: string;
@@ -41,6 +43,7 @@ export interface Settings {
   dailyMotorcycleCost: number;
   perDeliveryCost: number;
   showLimitedMenu?: boolean;
+  language?: Language;
 }
 
 export interface DailySalesRecord {

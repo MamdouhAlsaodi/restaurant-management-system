@@ -1,21 +1,25 @@
 
 import React, { useState } from 'react';
-import { MenuItem } from '../../types';
+import { MenuItem, Language } from '../../types';
 import { CATEGORIES, SPECIAL_MENU_CATEGORY } from '../../utils/helpers';
-import { X, Upload, Image as ImageIcon, Zap } from 'lucide-react';
+import { translations } from '../../utils/translations';
+import { X, Upload, Zap } from 'lucide-react';
 
 interface AddItemModalProps {
   onClose: () => void;
   onAdd: (item: Omit<MenuItem, 'id'>) => void;
   showSpecialCategory?: boolean;
+  language: Language;
 }
 
-const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecialCategory }) => {
+const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecialCategory, language }) => {
   const [newItem, setNewItem] = useState<Omit<MenuItem, 'id'>>({ name: '', price: 0, image: '', category: CATEGORIES[0], description: '' });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [localCategories, setLocalCategories] = useState(CATEGORIES);
+  
+  const t = translations[language];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,7 +33,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
         };
         reader.readAsDataURL(file);
       } else {
-        alert('⚠️ يرجى اختيار ملف صورة صحيح');
+        alert('⚠️ Error file type');
       }
     }
   };
@@ -58,7 +62,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
       <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-orange-600 flex items-center gap-2">
-            <span>➕</span> إضافة صنف
+            <span>➕</span> {t.addItem}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X size={24} />
@@ -68,7 +72,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
         <div className="space-y-4">
           <input
             type="text"
-            placeholder="اسم الصنف"
+            placeholder={t.itemName}
             value={newItem.name}
             onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
             className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
@@ -76,14 +80,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
           <input
             type="number"
             step="0.01"
-            placeholder="السعر (R$)"
+            placeholder={`${t.price} (${t.currency})`}
             value={newItem.price || ''}
             onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) })}
             className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
           />
           
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-700">الفئة</label>
+            <label className="text-sm font-bold text-gray-700">{t.category}</label>
             <div className="relative">
                 <select
                     value={newItem.category}
@@ -102,24 +106,24 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
                 onClick={() => setShowNewCategory(!showNewCategory)}
                 className="text-sm text-blue-600 hover:underline self-start"
             >
-                + فئة جديدة
+                + {t.category}
             </button>
             {showNewCategory && (
                 <div className="flex gap-2">
                     <input 
                         type="text" 
                         className="flex-1 p-2 border rounded-lg bg-white" 
-                        placeholder="اسم الفئة"
+                        placeholder={t.category}
                         value={newCategoryName}
                         onChange={e => setNewCategoryName(e.target.value)}
                     />
-                    <button onClick={handleAddNewCategory} className="bg-blue-600 text-white px-3 rounded-lg">إضافة</button>
+                    <button onClick={handleAddNewCategory} className="bg-blue-600 text-white px-3 rounded-lg">{t.add}</button>
                 </div>
             )}
           </div>
 
           <textarea
-            placeholder="الوصف (اختياري)"
+            placeholder={`${t.description} (Optional)`}
             value={newItem.description || ''}
             onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
             className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none resize-none"
@@ -131,13 +135,12 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
                 <div className="bg-blue-50 p-3 rounded-full text-blue-600">
                     <Upload size={24} />
                 </div>
-                <span className="font-semibold text-gray-600">رفع صورة من الجهاز</span>
-                <span className="text-xs text-gray-400">أو أدخل الرابط أدناه</span>
+                <span className="font-semibold text-gray-600">{t.uploadImage}</span>
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
             <input
                 type="text"
-                placeholder="رابط الصورة (URL)"
+                placeholder="URL"
                 value={newItem.image && !newItem.image.startsWith('data:') ? newItem.image : ''}
                 onChange={(e) => {
                     setNewItem({ ...newItem, image: e.target.value });
@@ -169,10 +172,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, showSpecial
 
           <div className="flex gap-3 mt-6">
             <button onClick={onClose} className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
-              إلغاء
+              {t.cancel}
             </button>
             <button onClick={handleAdd} className="flex-1 bg-orange-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-orange-700 transition-colors shadow-lg shadow-orange-200">
-              إضافة
+              {t.add}
             </button>
           </div>
         </div>

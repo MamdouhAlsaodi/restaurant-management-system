@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { MenuItem, Order, Settings, Discount, DailySalesRecord, OrderItem } from './types';
+import { MenuItem, Order, Settings, Discount, DailySalesRecord, OrderItem, Language } from './types';
 import { CATEGORIES, formatDate, getItemPrice, SPECIAL_MENU_CATEGORY } from './utils/helpers';
+import { translations } from './utils/translations';
 import MenuView from './components/views/MenuView';
 import SalesView from './components/views/SalesView';
 import OrdersView from './components/views/OrdersView';
@@ -24,8 +25,18 @@ const App = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showDiscounts, setShowDiscounts] = useState(false);
-  const [settings, setSettings] = useState<Settings>({ dailyMotorcycleCost: 30, perDeliveryCost: 10, showLimitedMenu: false });
+  const [settings, setSettings] = useState<Settings>({ dailyMotorcycleCost: 30, perDeliveryCost: 10, showLimitedMenu: false, language: 'ar' });
   const [dailySalesRecords, setDailySalesRecords] = useState<Record<string, DailySalesRecord>>({});
+  
+  const language: Language = settings.language || 'ar';
+  const t = translations[language];
+
+  // Update Document Direction based on Language
+  useEffect(() => {
+    const dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
+  }, [language]);
   
   // Format for state tracking (Sales View)
   const [selectedSalesDate, setSelectedSalesDate] = useState(formatDate(new Date()));
@@ -123,7 +134,7 @@ const App = () => {
       orderType,
       needsDelivery,
       notes,
-      date: new Date().toLocaleString('ar-SA'),
+      date: new Date().toLocaleString(language === 'ar' ? 'ar-SA' : 'en-US'),
       dateOnly: formatDate(new Date()),
       status: 'completed'
     };
@@ -132,9 +143,6 @@ const App = () => {
     handleUpdateOrders(updatedOrders);
     setCurrentOrder([]);
     setShowCheckout(false);
-    
-    // Update daily sales record implicitly by re-rendering sales logic or explicitly saving
-    // For simplicity, we rely on the SalesView logic to aggregate from orders list
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,9 +159,9 @@ const App = () => {
           setDailySalesRecords(data.dailySalesRecords);
           saveData('restaurant-daily-sales', data.dailySalesRecords);
       }
-      alert('✅ تم استيراد البيانات بنجاح');
+      alert('✅ ' + (language === 'ar' ? 'تم استيراد البيانات بنجاح' : 'Data imported successfully'));
     } catch (err) {
-      alert('❌ خطأ في الملف');
+      alert('❌ ' + (language === 'ar' ? 'خطأ في الملف' : 'File error'));
     }
   };
 
@@ -179,7 +187,7 @@ const App = () => {
   const totalItemsInCart = currentOrder.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans" dir="rtl">
+    <div className={`min-h-screen bg-gray-50 text-gray-800 font-sans`}>
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -188,8 +196,8 @@ const App = () => {
               🍽️
             </div>
             <div>
-                <h1 className="font-extrabold text-xl text-gray-800 tracking-tight">إدارة المطعم</h1>
-                <p className="text-xs text-gray-500 font-medium">نظام المبيعات الذكي</p>
+                <h1 className="font-extrabold text-xl text-gray-800 tracking-tight">{t.appTitle}</h1>
+                <p className="text-xs text-gray-500 font-medium">{t.appSubtitle}</p>
             </div>
           </div>
           
@@ -202,7 +210,7 @@ const App = () => {
                 className="relative bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-xl shadow-gray-200 active:scale-95"
             >
               <ShoppingCart size={20} />
-              <span className="hidden sm:inline">السلة</span>
+              <span className="hidden sm:inline">{t.cart}</span>
               {totalItemsInCart > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs border-2 border-white animate-pulse">
                   {totalItemsInCart}
@@ -215,14 +223,14 @@ const App = () => {
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 overflow-x-auto scrollbar-hide">
             <div className="flex gap-6 border-b border-gray-100">
-                <button onClick={() => setView('menu')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'menu' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📋 القائمة</button>
-                <button onClick={() => setView('sales')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'sales' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📈 المبيعات</button>
-                <button onClick={() => setView('orders')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'orders' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>🕐 الطلبات</button>
-                <button onClick={() => setView('history')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'history' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📜 السجل</button>
+                <button onClick={() => setView('menu')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'menu' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📋 {t.menu}</button>
+                <button onClick={() => setView('sales')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'sales' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📈 {t.sales}</button>
+                <button onClick={() => setView('orders')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'orders' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>🕐 {t.orders}</button>
+                <button onClick={() => setView('history')} className={`py-3 px-2 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${view === 'history' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>📜 {t.history}</button>
                 
-                <div className="mr-auto flex items-center gap-2 py-2">
-                    <button onClick={() => setShowDiscounts(true)} className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">🏷️ خصومات</button>
-                    <button onClick={() => setShowAddItem(true)} className="px-3 py-1.5 text-xs font-bold bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">➕ إضافة صنف</button>
+                <div className="ms-auto flex items-center gap-2 py-2">
+                    <button onClick={() => setShowDiscounts(true)} className="px-3 py-1.5 text-xs font-bold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">🏷️ {t.discounts}</button>
+                    <button onClick={() => setShowAddItem(true)} className="px-3 py-1.5 text-xs font-bold bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors">➕ {t.addItem}</button>
                 </div>
             </div>
         </div>
@@ -236,6 +244,7 @@ const App = () => {
             currentOrder={currentOrder}
             discounts={discounts}
             showLimitedMenu={settings.showLimitedMenu}
+            language={language}
             onUpdateOrder={handleUpdateOrder}
             onEditItem={(item) => {
                 const newItems = menuItems.map(i => i.id === item.id ? item : i);
@@ -246,13 +255,11 @@ const App = () => {
             onMoveItem={(cat, idx, dir) => {
                 const catItems = menuItems.filter(i => i.category === cat).sort((a,b) => (a.order||0) - (b.order||0));
                 if (idx < 0 || idx >= catItems.length) return;
-                // Swap logic similar to original, implemented cleanly
                 const item = catItems[idx];
                 const swapIdx = dir === 'up' ? idx - 1 : idx + 1;
                 if(swapIdx < 0 || swapIdx >= catItems.length) return;
                 const swapItem = catItems[swapIdx];
                 
-                // Assign new order values to maintain persistent sort
                 const updatedItems = menuItems.map(i => {
                     if (i.id === item.id) return { ...i, order: swapItem.order ?? swapIdx };
                     if (i.id === swapItem.id) return { ...i, order: item.order ?? idx };
@@ -266,11 +273,7 @@ const App = () => {
         {view === 'sales' && (
           <SalesView 
             analytics={
-                // Calculate analytics on the fly for the selected date
                 (() => {
-                    // Import helper logic directly here or use memoized result
-                    // For the sake of this structure, we use the logic from helpers but passed as props is cleaner
-                    // Re-implementing getSalesAnalytics call
                     const dateOrders = completedOrders.filter(o => o.dateOnly === selectedSalesDate && o.status !== 'cancelled');
                     const totalSales = dateOrders.reduce((s, o) => s + o.total, 0);
                     const paymentBreakdown: any = { cash: 0, pix: 0, ifood_card: 0, cartao: 0 };
@@ -308,8 +311,8 @@ const App = () => {
                 })()
             }
             settings={settings}
+            language={language}
             onExportSales={() => {
-                // Simplified export logic for this view
                 alert('Export functionality hooked up in helper');
             }}
             selectedDate={selectedSalesDate}
@@ -325,12 +328,13 @@ const App = () => {
         {view === 'orders' && (
           <OrdersView 
             orders={completedOrders}
+            language={language}
             onToggleStatus={(id) => {
                 const updated = completedOrders.map(o => o.id === id ? { ...o, status: (o.status === 'cancelled' ? 'completed' : 'cancelled') as any } : o);
                 handleUpdateOrders(updated);
             }}
             onDelete={(id) => {
-                if(confirm('هل أنت متأكد من الحذف؟')) {
+                if(confirm(t.confirmDelete)) {
                     handleUpdateOrders(completedOrders.filter(o => o.id !== id));
                 }
             }}
@@ -338,7 +342,6 @@ const App = () => {
                 const updated = completedOrders.map(o => {
                     if (o.id !== oId) return o;
                     const items = o.items.map(i => i.id === iId ? { ...i, quantity: qty } : i).filter(i => i.quantity > 0);
-                    // Recalc total roughly (ignoring discounts history for editing simplicity, or reuse stored prices)
                     const total = items.reduce((s, i) => s + (i.price * i.quantity), 0) + (o.needsDelivery ? 10 : 0);
                     return { ...o, items, total };
                 });
@@ -349,13 +352,11 @@ const App = () => {
 
         {view === 'history' && (
           <HistoryView 
-            // We can derive records from completedOrders dynamically or use the stored daily records
-            // Using dynamic calculation ensures consistency if orders are edited
+            language={language}
             records={(() => {
                 const recs: Record<string, DailySalesRecord> = {};
                 const dates = [...new Set(completedOrders.map(o => o.dateOnly))] as string[];
                 dates.forEach(d => {
-                    // Reuse calculation logic roughly
                     const dateOrders = completedOrders.filter(o => o.dateOnly === d && o.status !== 'cancelled');
                     const totalSales = dateOrders.reduce((s, o) => s + o.total, 0);
                     const deliveryCount = dateOrders.filter(o => o.needsDelivery).length;
@@ -367,7 +368,7 @@ const App = () => {
                         deliveryCount,
                         deliveryCost,
                         netProfit: totalSales - deliveryCost,
-                        itemsSold: {}, // Populated if needed
+                        itemsSold: {},
                         paymentBreakdown: {},
                         sourceBreakdown: {},
                         typeBreakdown: {},
@@ -382,20 +383,21 @@ const App = () => {
       </main>
 
       {/* Modals */}
-      {showAddItem && <AddItemModal showSpecialCategory={settings.showLimitedMenu} onClose={() => setShowAddItem(false)} onAdd={handleAddItem} />}
+      {showAddItem && <AddItemModal language={language} showSpecialCategory={settings.showLimitedMenu} onClose={() => setShowAddItem(false)} onAdd={handleAddItem} />}
       {showCart && (
         <CartModal 
           items={currentOrder}
           discounts={discounts}
+          language={language}
           onClose={() => setShowCart(false)}
           onUpdateQty={handleUpdateOrder}
           onRemove={handleRemoveFromCart}
           onCheckout={() => { setShowCart(false); setShowCheckout(true); }}
         />
       )}
-      {showCheckout && <CheckoutModal onCancel={() => setShowCheckout(false)} onComplete={handleCheckout} />}
+      {showCheckout && <CheckoutModal language={language} onCancel={() => setShowCheckout(false)} onComplete={handleCheckout} />}
       {showSettings && <SettingsModal settings={settings} onSave={handleUpdateSettings} onClose={() => setShowSettings(false)} onExport={handleExport} onImport={handleImport} />}
-      {showDiscounts && <DiscountsModal items={menuItems} discounts={discounts} onSave={handleUpdateDiscounts} onClose={() => setShowDiscounts(false)} />}
+      {showDiscounts && <DiscountsModal language={language} items={menuItems} discounts={discounts} onSave={handleUpdateDiscounts} onClose={() => setShowDiscounts(false)} />}
     </div>
   );
 };

@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { MenuItem, OrderItem } from '../../types';
+import { MenuItem, OrderItem, Language } from '../../types';
 import { getItemPrice, SPECIAL_MENU_CATEGORY } from '../../utils/helpers';
+import { translations } from '../../utils/translations';
 import { Edit2, Trash, Star, Plus, Minus, Zap } from 'lucide-react';
 
 interface MenuViewProps {
@@ -15,11 +16,13 @@ interface MenuViewProps {
   onDeleteItem: (id: number) => void;
   onToggleFavorite: (id: number) => void;
   onMoveItem: (category: string, index: number, direction: 'up' | 'down') => void;
+  language: Language;
 }
 
 const MenuView: React.FC<MenuViewProps> = ({
-  categories, menuItems, currentOrder, discounts, showLimitedMenu, onUpdateOrder, onEditItem, onDeleteItem, onToggleFavorite, onMoveItem
+  categories, menuItems, currentOrder, discounts, showLimitedMenu, onUpdateOrder, onEditItem, onDeleteItem, onToggleFavorite, onMoveItem, language
 }) => {
+  const t = translations[language];
   
   const renderItemCard = (item: MenuItem, index: number, cat: string, isFavSection: boolean = false, isSpecial: boolean = false) => {
     const currentPrice = getItemPrice(item, discounts);
@@ -41,12 +44,12 @@ const MenuView: React.FC<MenuViewProps> = ({
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
             {hasDiscount && (
                 <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
-                    خصم
+                    %
                 </span>
             )}
             {isSpecial && (
                 <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-                    <Zap size={10} fill="currentColor" /> خاص
+                    <Zap size={10} fill="currentColor" /> {t.specialMenu}
                 </span>
             )}
         </div>
@@ -89,11 +92,11 @@ const MenuView: React.FC<MenuViewProps> = ({
                 <div className="flex items-end gap-2 mb-4">
                     {hasDiscount ? (
                         <>
-                            <span className="text-gray-400 text-sm line-through decoration-red-400">R$ {item.price.toFixed(2)}</span>
-                            <span className="text-xl font-bold text-red-600">R$ {currentPrice.toFixed(2)}</span>
+                            <span className="text-gray-400 text-sm line-through decoration-red-400">{t.currency} {item.price.toFixed(2)}</span>
+                            <span className="text-xl font-bold text-red-600">{t.currency} {currentPrice.toFixed(2)}</span>
                         </>
                     ) : (
-                        <span className="text-xl font-bold text-green-600">R$ {currentPrice.toFixed(2)}</span>
+                        <span className="text-xl font-bold text-green-600">{t.currency} {currentPrice.toFixed(2)}</span>
                     )}
                 </div>
 
@@ -121,7 +124,7 @@ const MenuView: React.FC<MenuViewProps> = ({
                             onClick={() => onUpdateOrder(item, 1)}
                             className={`w-full h-full text-white rounded-lg font-bold active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2 ${isSpecial ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-100' : 'bg-orange-600 hover:bg-orange-700 shadow-orange-100'}`}
                         >
-                            <span>🛒</span> أضف
+                            <span>🛒</span> {t.add}
                         </button>
                     )}
                 </div>
@@ -146,8 +149,8 @@ const MenuView: React.FC<MenuViewProps> = ({
             <div className="flex items-center gap-2 mb-6 relative z-10">
                 <span className="text-3xl animate-bounce">⚡</span>
                 <div>
-                    <h2 className="text-2xl font-extrabold text-purple-900">القائمة الخاصة</h2>
-                    <p className="text-purple-600 text-xs font-bold">لفترة محدودة فقط!</p>
+                    <h2 className="text-2xl font-extrabold text-purple-900">{t.specialMenu}</h2>
+                    <p className="text-purple-600 text-xs font-bold">{t.limitedTime}</p>
                 </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 relative z-10">
@@ -159,8 +162,8 @@ const MenuView: React.FC<MenuViewProps> = ({
       {/* Empty State for Special Menu if active but empty */}
       {showLimitedMenu && specialItems.length === 0 && (
           <div className="border-2 border-dashed border-purple-300 rounded-2xl p-6 text-center bg-purple-50">
-             <h3 className="text-purple-700 font-bold">القائمة الخاصة مفعلة</h3>
-             <p className="text-xs text-purple-500 mb-2">قم بإضافة أصناف جديدة واختر فئة "قائمة خاصة"</p>
+             <h3 className="text-purple-700 font-bold">{t.specialMenu}</h3>
+             <p className="text-xs text-purple-500 mb-2">{t.decoModeDesc}</p>
           </div>
       )}
 
@@ -168,7 +171,7 @@ const MenuView: React.FC<MenuViewProps> = ({
         <section>
             <div className="flex items-center gap-2 mb-4 bg-yellow-50 p-3 rounded-xl border border-yellow-100 w-fit">
                 <span className="text-2xl">⭐</span>
-                <h2 className="text-xl font-bold text-yellow-700">الأصناف المفضلة</h2>
+                <h2 className="text-xl font-bold text-yellow-700">{t.favorites}</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {favoriteItems.map((item, idx) => renderItemCard(item, idx, item.category, true))}
@@ -181,7 +184,7 @@ const MenuView: React.FC<MenuViewProps> = ({
         if (items.length === 0) return null;
         return (
           <section key={cat}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 sticky top-[72px] bg-gray-50/90 backdrop-blur p-2 rounded-lg z-10 border-r-4 border-orange-500 pl-3">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 sticky top-[72px] bg-gray-50/90 backdrop-blur p-2 rounded-lg z-10 border-r-4 rtl:border-r-4 ltr:border-l-4 border-orange-500 rtl:pl-3 ltr:pr-3">
                {cat}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -194,8 +197,8 @@ const MenuView: React.FC<MenuViewProps> = ({
       {menuItems.length === 0 && !showLimitedMenu && (
         <div className="flex flex-col items-center justify-center py-20 text-gray-400">
             <span className="text-6xl mb-4">🍽️</span>
-            <p className="text-xl">لا توجد أصناف في القائمة</p>
-            <p className="text-sm">اضغط على "إضافة" للبدء</p>
+            <p className="text-xl">{t.noItems}</p>
+            <p className="text-sm">{t.addItem}</p>
         </div>
       )}
     </div>

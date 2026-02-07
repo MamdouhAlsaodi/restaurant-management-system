@@ -1,5 +1,7 @@
+
 import React, { useState, useMemo } from 'react';
-import { Order } from '../../types';
+import { Order, Language } from '../../types';
+import { translations } from '../../utils/translations';
 import { Trash, RefreshCcw, Check, ShoppingBag, Clock, Calendar, ArrowUpDown } from 'lucide-react';
 
 interface OrdersViewProps {
@@ -7,10 +9,12 @@ interface OrdersViewProps {
   onToggleStatus: (id: number) => void;
   onDelete: (id: number) => void;
   onUpdateItemQty: (orderId: number, itemId: number, qty: number) => void;
+  language: Language;
 }
 
-const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelete, onUpdateItemQty }) => {
-  
+const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelete, onUpdateItemQty, language }) => {
+  const t = translations[language];
+
   const [filter, setFilter] = useState<'completed' | 'cancelled'>('completed');
   const [editingItem, setEditingItem] = useState<{oId: number, iId: number} | null>(null);
   const [tempQty, setTempQty] = useState('');
@@ -79,13 +83,13 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                 onClick={() => setFilter('completed')}
                 className={`flex-1 xl:flex-none px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${filter === 'completed' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
-                <Check size={16} /> المكتملة
+                <Check size={16} /> {t.completed}
             </button>
             <button 
                 onClick={() => setFilter('cancelled')}
                 className={`flex-1 xl:flex-none px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${filter === 'cancelled' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
-                <Trash size={16} /> الملغاة
+                <Trash size={16} /> {t.cancelled}
             </button>
         </div>
 
@@ -96,7 +100,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                 <input 
                     type="date" 
                     className="bg-transparent text-sm outline-none w-full text-gray-600 font-medium" 
-                    placeholder="من تاريخ"
+                    placeholder={t.fromDate}
                     value={startDate} 
                     onChange={e => setStartDate(e.target.value)} 
                 />
@@ -104,7 +108,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                 <input 
                     type="date" 
                     className="bg-transparent text-sm outline-none w-full text-gray-600 font-medium" 
-                    placeholder="إلى تاريخ"
+                    placeholder={t.toDate}
                     value={endDate} 
                     onChange={e => setEndDate(e.target.value)} 
                 />
@@ -117,10 +121,10 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                     onChange={e => setSortOption(e.target.value as any)}
                     className="bg-transparent text-sm outline-none w-full font-bold text-gray-700 cursor-pointer"
                 >
-                    <option value="newest">🆕 الأحدث</option>
-                    <option value="oldest">📅 الأقدم</option>
-                    <option value="highest">💰 الأعلى سعراً</option>
-                    <option value="lowest">📉 الأقل سعراً</option>
+                    <option value="newest">🆕 {t.newest}</option>
+                    <option value="oldest">📅 {t.oldest}</option>
+                    <option value="highest">💰 {t.highestPrice}</option>
+                    <option value="lowest">📉 {t.lowestPrice}</option>
                 </select>
              </div>
         </div>
@@ -129,10 +133,10 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
       {filteredAndSortedOrders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-gray-400">
             <ShoppingBag size={48} className="mb-4 opacity-20" />
-            <p>لا توجد طلبات تطابق معايير البحث</p>
+            <p>{t.noItems}</p>
             {(startDate || endDate) && (
                 <button onClick={() => { setStartDate(''); setEndDate(''); }} className="mt-2 text-blue-500 text-sm hover:underline font-bold">
-                    مسح الفلاتر
+                    Clear Filters
                 </button>
             )}
         </div>
@@ -145,7 +149,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-lg text-gray-800">#{order.id.toString().slice(-4)}</span>
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${order.status === 'cancelled' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
-                                    {order.status === 'cancelled' ? 'ملغى' : 'مكتمل'}
+                                    {order.status === 'cancelled' ? t.cancelled : t.completed}
                                 </span>
                             </div>
                             <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
@@ -154,14 +158,14 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                             </div>
                         </div>
                         <div className="text-right">
-                            <span className="block font-bold text-xl text-gray-800">R$ {order.total.toFixed(2)}</span>
+                            <span className="block font-bold text-xl text-gray-800">{t.currency} {order.total.toFixed(2)}</span>
                             <span className="text-xs text-gray-500">{order.paymentMethod}</span>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                         <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md font-medium">
-                            {order.orderType === 'dine_in' ? 'محلي' : order.orderType === 'takeaway' ? 'سفري' : 'توصيل'}
+                            {order.orderType === 'dine_in' ? t.dineIn : order.orderType === 'takeaway' ? t.takeaway : t.delivery}
                         </span>
                         <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-md font-medium">
                             {order.orderSource}
@@ -196,7 +200,7 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                                     )}
                                     {order.status === 'cancelled' && <span className="text-gray-500">x{item.quantity}</span>}
                                 </div>
-                                <span className="text-gray-500">R$ {(item.price * item.quantity).toFixed(2)}</span>
+                                <span className="text-gray-500">{t.currency} {(item.price * item.quantity).toFixed(2)}</span>
                             </div>
                         ))}
                     </div>
@@ -212,12 +216,12 @@ const OrdersView: React.FC<OrdersViewProps> = ({ orders, onToggleStatus, onDelet
                             onClick={() => onToggleStatus(order.id)}
                             className={`flex-1 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${order.status === 'cancelled' ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'}`}
                         >
-                            {order.status === 'cancelled' ? <><RefreshCcw size={16}/> استعادة</> : <><Trash size={16}/> إلغاء</>}
+                            {order.status === 'cancelled' ? <><RefreshCcw size={16}/> {t.restore}</> : <><Trash size={16}/> {t.cancelled}</>}
                         </button>
                         <button 
                             onClick={() => onDelete(order.id)}
                             className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                            title="حذف نهائي"
+                            title={t.delete}
                         >
                             <Trash size={18} />
                         </button>

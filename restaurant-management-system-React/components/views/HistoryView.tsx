@@ -1,14 +1,17 @@
+
 import React from 'react';
-import { DailySalesRecord } from '../../types';
+import { DailySalesRecord, Language } from '../../types';
+import { translations } from '../../utils/translations';
 import { ChevronDown, Calendar, DollarSign, ShoppingBag } from 'lucide-react';
 
 interface HistoryViewProps {
   records: Record<string, DailySalesRecord>;
+  language: Language;
 }
 
-const HistoryView: React.FC<HistoryViewProps> = ({ records }) => {
+const HistoryView: React.FC<HistoryViewProps> = ({ records, language }) => {
+  const t = translations[language];
   const sortedDates = Object.keys(records).sort((a, b) => {
-      // Assuming dd/mm/yyyy
       const [da, ma, ya] = a.split('/').map(Number);
       const [db, mb, yb] = b.split('/').map(Number);
       return new Date(yb, mb-1, db).getTime() - new Date(ya, ma-1, da).getTime();
@@ -18,15 +21,15 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records }) => {
     <div className="space-y-6 pb-10">
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span>📜</span> سجل المبيعات
+            <span>📜</span> {t.history}
         </h2>
-        <p className="text-gray-500 text-sm mt-1">أرشيف العمليات اليومية</p>
+        <p className="text-gray-500 text-sm mt-1">{t.oldest}</p>
       </div>
 
       {sortedDates.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
               <Calendar size={48} className="mx-auto mb-4 opacity-20"/>
-              <p>لا يوجد سجلات سابقة</p>
+              <p>{t.noItems}</p>
           </div>
       ) : (
           <div className="space-y-4">
@@ -42,14 +45,14 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records }) => {
                                           <span className="text-[10px] opacity-70">{date.split('/')[1]}/{date.split('/')[2]}</span>
                                       </div>
                                       <div>
-                                          <h3 className="font-bold text-gray-800">تقرير يوم {date}</h3>
-                                          <p className="text-xs text-gray-500">{record.ordersCount} طلب • {record.savedAt?.split(' ')[1] || ''}</p>
+                                          <h3 className="font-bold text-gray-800">{t.salesReport} {date}</h3>
+                                          <p className="text-xs text-gray-500">{record.ordersCount} {t.orders} • {record.savedAt?.split(' ')[1] || ''}</p>
                                       </div>
                                   </div>
                                   <div className="flex items-center gap-4">
-                                      <div className="text-right">
-                                          <p className="font-bold text-green-600">R$ {record.totalSales.toFixed(2)}</p>
-                                          <p className="text-[10px] text-gray-400">صافي: R$ {record.netProfit.toFixed(2)}</p>
+                                      <div className="text-right sm:text-end">
+                                          <p className="font-bold text-green-600">{t.currency} {record.totalSales.toFixed(2)}</p>
+                                          <p className="text-[10px] text-gray-400">{t.netProfit}: {t.currency} {record.netProfit.toFixed(2)}</p>
                                       </div>
                                       <ChevronDown className="text-gray-400 transition-transform group-open:rotate-180" size={20} />
                                   </div>
@@ -58,25 +61,25 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records }) => {
                               <div className="p-4 border-t border-gray-100 bg-gray-50/30">
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                                       <div className="bg-white p-3 rounded-lg border border-gray-100">
-                                          <p className="text-xs text-gray-500">المبيعات</p>
-                                          <p className="font-bold text-gray-800">R$ {record.totalSales.toFixed(2)}</p>
+                                          <p className="text-xs text-gray-500">{t.sales}</p>
+                                          <p className="font-bold text-gray-800">{t.currency} {record.totalSales.toFixed(2)}</p>
                                       </div>
                                       <div className="bg-white p-3 rounded-lg border border-gray-100">
-                                          <p className="text-xs text-gray-500">التوصيل</p>
-                                          <p className="font-bold text-gray-800">{record.deliveryCount} <span className="text-[10px] font-normal text-red-500">(-R$ {record.deliveryCost})</span></p>
+                                          <p className="text-xs text-gray-500">{t.delivery}</p>
+                                          <p className="font-bold text-gray-800">{record.deliveryCount} <span className="text-[10px] font-normal text-red-500">(-{t.currency} {record.deliveryCost})</span></p>
                                       </div>
                                       <div className="bg-white p-3 rounded-lg border border-gray-100">
-                                          <p className="text-xs text-gray-500">الطلبات</p>
+                                          <p className="text-xs text-gray-500">{t.orders}</p>
                                           <p className="font-bold text-gray-800">{record.ordersCount}</p>
                                       </div>
                                       <div className="bg-white p-3 rounded-lg border border-gray-100">
-                                          <p className="text-xs text-gray-500">الصافي</p>
-                                          <p className="font-bold text-green-600">R$ {record.netProfit.toFixed(2)}</p>
+                                          <p className="text-xs text-gray-500">{t.netProfit}</p>
+                                          <p className="font-bold text-green-600">{t.currency} {record.netProfit.toFixed(2)}</p>
                                       </div>
                                   </div>
 
                                   <div className="text-sm">
-                                      <h4 className="font-bold mb-2 text-gray-700 text-xs">أفضل الأصناف مبيعاً</h4>
+                                      <h4 className="font-bold mb-2 text-gray-700 text-xs">{t.itemsSold}</h4>
                                       <div className="flex flex-wrap gap-2">
                                           {Object.entries(record.itemsSold || {})
                                               .sort((a,b) => (b[1] as {quantity: number}).quantity - (a[1] as {quantity: number}).quantity)

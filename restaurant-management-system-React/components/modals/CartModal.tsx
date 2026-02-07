@@ -1,7 +1,8 @@
 import React from 'react';
-import { OrderItem, MenuItem } from '../../types';
+import { OrderItem, MenuItem, Language } from '../../types';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { getItemPrice } from '../../utils/helpers';
+import { translations } from '../../utils/translations';
 
 interface CartModalProps {
   items: OrderItem[];
@@ -10,11 +11,14 @@ interface CartModalProps {
   onUpdateQty: (item: MenuItem, qty: number, mode?: 'delta' | 'set') => void;
   onRemove: (id: number) => void;
   onCheckout: () => void;
+  language: Language;
 }
 
 const CartModal: React.FC<CartModalProps> = ({ 
-  items, discounts, onClose, onUpdateQty, onRemove, onCheckout 
+  items, discounts, onClose, onUpdateQty, onRemove, onCheckout, language
 }) => {
+  const t = translations[language];
+
   const total = items.reduce((sum, item) => {
     const price = getItemPrice(item, discounts);
     return sum + (price * item.quantity);
@@ -27,7 +31,7 @@ const CartModal: React.FC<CartModalProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center mb-6 pb-4 border-b">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <ShoppingBag className="text-orange-600" /> سلة الطلبات
+            <ShoppingBag className="text-orange-600" /> {t.cart}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 bg-gray-100 p-2 rounded-full transition-colors">
             <X size={24} />
@@ -39,9 +43,9 @@ const CartModal: React.FC<CartModalProps> = ({
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <ShoppingBag size={64} className="mb-4 opacity-20" />
-              <p className="text-lg font-medium">السلة فارغة حالياً</p>
+              <p className="text-lg font-medium">{t.emptyCart}</p>
               <button onClick={onClose} className="mt-4 text-orange-600 font-bold hover:underline bg-orange-50 px-4 py-2 rounded-lg">
-                تصفح القائمة
+                {t.browseMenu}
               </button>
             </div>
           ) : (
@@ -61,11 +65,11 @@ const CartModal: React.FC<CartModalProps> = ({
                    </div>
 
                    {/* Details */}
-                   <div className="flex-1 w-full text-center sm:text-right">
+                   <div className="flex-1 w-full text-center sm:text-start">
                       <h3 className="font-bold text-gray-800 text-lg">{item.name}</h3>
                       <div className="flex items-center justify-center sm:justify-start gap-2 text-sm mt-1">
-                        {hasDiscount && <span className="text-gray-400 line-through">R$ {item.price.toFixed(2)}</span>}
-                        <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">R$ {currentPrice.toFixed(2)}</span>
+                        {hasDiscount && <span className="text-gray-400 line-through">{t.currency} {item.price.toFixed(2)}</span>}
+                        <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">{t.currency} {currentPrice.toFixed(2)}</span>
                       </div>
                    </div>
 
@@ -100,13 +104,13 @@ const CartModal: React.FC<CartModalProps> = ({
                       </div>
                       
                       <div className="min-w-[80px] text-left font-bold text-orange-600 text-lg">
-                        R$ {(currentPrice * item.quantity).toFixed(2)}
+                        {t.currency} {(currentPrice * item.quantity).toFixed(2)}
                       </div>
 
                       <button 
                         onClick={() => onRemove(item.id)}
                         className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="حذف الصنف"
+                        title={t.delete}
                       >
                         <Trash2 size={20} />
                       </button>
@@ -121,15 +125,15 @@ const CartModal: React.FC<CartModalProps> = ({
         {items.length > 0 && (
           <div className="mt-6 pt-4 border-t bg-gray-50/50 -mx-6 -mb-6 p-6 rounded-b-2xl">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-600 font-bold text-lg">المجموع الكلي:</span>
-              <span className="text-3xl font-extrabold text-gray-900">R$ {total.toFixed(2)}</span>
+              <span className="text-gray-600 font-bold text-lg">{t.total}:</span>
+              <span className="text-3xl font-extrabold text-gray-900">{t.currency} {total.toFixed(2)}</span>
             </div>
             
             <button 
               onClick={onCheckout}
               className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 rounded-xl font-bold text-xl hover:from-black hover:to-gray-900 transition-all shadow-lg shadow-gray-200 flex items-center justify-center gap-3 active:scale-[0.99]"
             >
-              <span>متابعة لعملية الدفع</span>
+              <span>{t.continueToPayment}</span>
               <ArrowRight size={24} className="rtl:rotate-180" />
             </button>
           </div>
