@@ -1,42 +1,91 @@
+Restaurant Management System
 
-# Restaurant Management System
+A complete system for managing an Arabic restaurant, designed to simplify daily operations and improve efficiency.
 
-A complete system for managing an Arabic restaurant, designed to simplify daily operations.
+Features
 
-## Features
+Menu and items management
 
-* Menu and items management
-* Orders and sales system
-* Discounts system
-* Daily reports
-* Data backup
+Orders and sales system
 
-## Installation
+Discounts system
 
-1. Upload all project files to the server or keep them locally
-2. Open the `index.html` file directly in your web browser
+Daily reports
 
+Data backup
 
+Installation & Versions Overview
+1️⃣ Legacy Version
 
+restaurant-management-system-indexhtml
 
-# نظام إدارة المطعم
+Runs directly in the web browser
 
-نظام متكامل لإدارة مطعم عربي يشمل مجموعة من الوظائف الأساسية لتسهيل الإدارة اليومية.
+No developer setup required
 
-## المميزات
+Open index.html directly
 
-* إدارة القائمة والأصناف
-* نظام الطلبات والمبيعات
-* نظام الخصومات
-* تقارير يومية
-* نسخ احتياطي للبيانات
+✔️ Ideal for quick testing and demos
 
-## التثبيت
+2️⃣ React Version (Current & Future Version)
 
-1. تحميل جميع الملفات على السيرفر أو على جهازك المحلي
-2. فتح ملف `index.html` مباشرة في المتصفح
+restaurant-management-system-React
 
-#.
+Built using React
 
----
+Requires a developer environment to run locally
 
+Needs Node.js and dependency installation
+
+Online demo available at:
+🔗 https://restaurant-manag.netlify.app/
+
+⚠️ This version cannot be run by opening index.html directly
+
+📌 All future updates and enhancements will be maintained in this version
+
+نظام إدارة المطعم
+
+نظام متكامل لإدارة مطعم عربي يشمل مجموعة من الوظائف الأساسية لتسهيل الإدارة اليومية وتحسين كفاءة العمل.
+
+المميزات
+
+إدارة القائمة والأصناف
+
+نظام الطلبات والمبيعات
+
+نظام الخصومات
+
+تقارير يومية
+
+نسخ احتياطي للبيانات
+
+التثبيت ونظرة عامة على النسخ
+1️⃣ النسخة القديمة
+
+restaurant-management-system-indexhtml
+
+تعمل مباشرة عبر المتصفح
+
+لا تحتاج إلى مطوّر أو إعدادات إضافية
+
+يتم فتح ملف index.html مباشرة
+
+✔️ مناسبة للتجربة السريعة والعروض التوضيحية
+
+2️⃣ نسخة React (النسخة الحالية والمستقبلية)
+
+restaurant-management-system-React
+
+مبنية باستخدام React
+
+تحتاج إلى مطوّر لتشغيلها محليًا
+
+تتطلب إعداد بيئة تطوير (Node.js)
+
+نسخة تجريبية متاحة على الإنترنت:
+🔗 https://restaurant-manag.netlify.app/
+
+⚠️ لا يمكن تشغيل هذه النسخة عن طريق فتح index.html مباشرة
+
+📌 جميع التحديثات والتطويرات المستقبلية ستكون على هذه النسخة فقط
