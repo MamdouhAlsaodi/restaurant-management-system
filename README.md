@@ -2,6 +2,12 @@ Restaurant Management System
 
 A complete system for managing an Arabic restaurant, designed to simplify daily operations and improve efficiency.
 
+Language Support
+🇸🇦 Arabic
+🇬🇧 English
+🇵🇹 Portuguese
+
+Users can switch between languages seamlessly without affecting system data or workflows.
 Features
 
 Menu and items management
@@ -47,7 +53,12 @@ Online demo available at:
 نظام إدارة المطعم
 
 نظام متكامل لإدارة مطعم عربي يشمل مجموعة من الوظائف الأساسية لتسهيل الإدارة اليومية وتحسين كفاءة العمل.
+دعم اللغات
 
+🇸🇦 العربية
+🇬🇧 الإنجليزية
+🇵🇹 البرتغالية
+يمكن للمستخدم التبديل بين اللغات بسهولة من داخل النظام دون التأثير على البيانات أو العمليات.
 المميزات
 
 إدارة القائمة والأصناف
@@ -89,3 +100,4 @@ restaurant-management-system-React
 ⚠️ لا يمكن تشغيل هذه النسخة عن طريق فتح index.html مباشرة
 
 📌 جميع التحديثات والتطويرات المستقبلية ستكون على هذه النسخة فقط
+
